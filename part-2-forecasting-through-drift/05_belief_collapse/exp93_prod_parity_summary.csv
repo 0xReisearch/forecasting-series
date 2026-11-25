@@ -1,0 +1,16 @@
+arena,arm,ep_seed,prod_cum_reward,reference_cum_reward,diff_cum_reward,prod_net_usd_1_50,reference_net_usd_1_50,diff_net_usd_1_50,prod_healthy,reference_healthy,prod_bap_strategy,reference_bap_strategy,steps_matched,steps_total,step_agreement_rate,exact_trace_match
+93B_clean,Live_Adapt1_QMDP_Native,2000,-1.36525,-1.36525,0,-218440,-218440,0,0,0,finite_world_qmdp,finite_world_qmdp,14,14,1,True
+93B_clean,Live_Adapt1_QMDP_Native,2001,-1.08175,-1.08175,0,-173080,-173080,0,0,0,finite_world_qmdp,finite_world_qmdp,14,14,1,True
+93B_clean,Live_Adapt1_QMDP_Native,2002,-1.042375,-1.042375,0,-166780,-166780,0,0,0,finite_world_qmdp,finite_world_qmdp,14,14,1,True
+93B_clean,Live_Adapt1_QMDP_Native,2003,-1.00975,-1.00975,0,-161560,-161560,0,0,0,finite_world_qmdp,finite_world_qmdp,14,14,1,True
+93B_clean,Live_Adapt1_QMDP_Native,2004,-1.069125,-1.069125,0,-171060,-171060,0,0,0,finite_world_qmdp,finite_world_qmdp,14,14,1,True
+93B_clean,Live_Adapt1_QMDP_Native,2005,0.1755,0.1755,0,28080,28080,0,1,1,finite_world_qmdp,finite_world_qmdp,14,14,1,True
+93B_clean,Live_Adapt1_QMDP_Native,2006,-0.23,-0.23,0,-36800,-36800,0,1,1,finite_world_qmdp,finite_world_qmdp,14,14,1,True
+93B_clean,Live_Adapt1_QMDP_Native,2007,-1.160625,-1.160625,0,-185700,-185700,0,0,0,finite_world_qmdp,finite_world_qmdp,14,14,1,True
+93B_clean,Live_Adapt1_QMDP_Native,2008,-0.7765,-0.7765,0,-124240,-124240,0,0,0,finite_world_qmdp,finite_world_qmdp,14,14,1,True
+93B_clean,Live_Adapt1_QMDP_Native,2009,-0.822375,-0.822375,0,-131580,-131580,0,0,0,finite_world_qmdp,finite_world_qmdp,14,14,1,True
+93A,Live_Adapt1_FullTriad_Native,1000,1.504381,1.504381,0,157960,157960,0,2,2,finite_world_belief_search,finite_world_belief_search,12,12,1,True
+93A,Live_Adapt1_FullTriad_Native,1001,0.734857,0.734857,0,77160,77160,0,2,2,finite_world_belief_search,finite_world_belief_search,12,12,1,True
+93A,Live_Adapt1_FullTriad_Native,1002,0.267905,0.267905,0,28130,28130,0,2,2,finite_world_belief_search,finite_world_belief_search,11,11,1,True
+93A,Live_Adapt1_FullTriad_Native,1003,3.008571,3.008571,0,315900,315900,0,4,4,finite_world_belief_search,finite_world_belief_search,15,15,1,True
+93A,Live_Adapt1_FullTriad_Native,1004,2.101905,2.101905,0,220700,220700,0,3,3,finite_world_belief_search,finite_world_belief_search,14,14,1,True

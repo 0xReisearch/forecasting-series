@@ -1,0 +1,34 @@
+# Python caches & virtual environments
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+env/
+
+# Secrets & local environment files
+.env
+.env.*
+*.pem
+*.key
+secrets/
+
+# OS & editor artifacts
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Local raw data downloads & temporary scratch runs
+raw_data/
+downloads/
+local_runs/
+tmp/
+*.zip
+*.parquet

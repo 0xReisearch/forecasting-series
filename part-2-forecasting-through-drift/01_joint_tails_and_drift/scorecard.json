@@ -1,0 +1,1535 @@
+{
+  "section": "01_joint_tails_and_drift",
+  "title": "Joint tails and drift",
+  "series": "Adapt-1 Research Series — Part 2: Forecasting Through Drift",
+  "provenance": {
+    "empirical_telemetry": [
+      "Exp 98A: Bundesnetzagentur SMARD German DE-LU day-ahead power prices & physical grid forecasts + Open-Meteo weather (n=450 sealed OOS days, 2025-08-27..2026-11-19)",
+      "Exp 98B: Daily multi-asset ETF returns (SPY/TLT/HYG/GLD), CBOE implied volatility indices (VIX/VIX3M/VVIX/OVX/GVZ), and official scheduled Federal Reserve FOMC / BLS CPI calendars (n=726 OOS days, 2024-01-02..2026-11-20)",
+      "Exp 79B / Exp 90C: Binance public 1h spot & perpetual futures OHLCV and basis across 4 digital assets (BTC, ETH, SOL, XRP; n=1,149 event-clock cascade steps, 2025-09-01..2026-11-23)",
+      "Exp 89B: SMARD / Bundesnetzagentur 4-TSO German wind & load (50Hertz, Amprion, TenneT, TransnetBW; cross-referenced with Fraunhofer ISE Energy-Charts definitions), Open-Meteo barometric tendency, CBOE OVX, ECB EUR FX, and daily GPRD (n=323 sealed OOS days, 2026-01-01..2026-11-19)",
+      "Exp 90A: EIA-930 US 4-ISO wind generation capacity factors (ERCO, CISO, PJM, MISO; n=318 sealed OOS days, 2026-01-01..2026-11-22)"
+    ],
+    "stylized_causal_overlays": [
+      "Exp 98A: Deterministic 1%-fee (0%/1%/2% swept) 1 MWh BESS arbitrage + 1 MWh peak-scarcity forward-vs-spot hedge overlay applied identically to every model's causal joint cloud",
+      "Exp 79B / Exp 90C: Deterministic 3x dynamic-leverage forced-liquidation survival overlay (5% maintenance-margin ruin floor, 0/5/15 bps one-way fees, parameters locked strictly on pre-OOS calibration data)",
+      "Exp 89B: Parameterized German evening-peak balancing-reserve dispatch overlay (4h evening peak, EUR 50/MWh standby fee, 20x VoLL = EUR 1,000/MWh headline, swept 10x/20x/50x + OVX*FX geo-stress; severe outage threshold >= 2.5 GW unserved)"
+    ]
+  },
+  "verification_attestation": {
+    "strict_rfc8259_no_nan_inf": true,
+    "zero_local_paths_or_usernames": true,
+    "zero_secrets_or_internal_hostnames": true,
+    "zero_internal_ids_or_raw_engine_dumps": true,
+    "all_rows_from_real_persisted_runs": true
+  },
+  "exp98a_german_power_scarcity": {
+    "window": {
+      "dev_cal": "2024-10-31..2025-05-18 (n=200)",
+      "causal_buffer": "2025-05-19..2025-08-26 (n=100)",
+      "sealed_oos": "2025-08-27..2026-11-19 (n=450, 65 ISO weeks)",
+      "post_2026_09": "2026-09-01..2026-11-19 (n=80, 12 ISO weeks)",
+      "ex_ante_scarcity_q80": "n=84 days (r0_fc_resload_proxy_gw > expanding q80)",
+      "ex_ante_solar_glut_q20": "n=93 days (r0_fc_resload_proxy_gw < expanding q20)",
+      "post_auction_columns_included": 0
+    },
+    "primary_anchor": "Live_Adapt1_W128_LinRes",
+    "api_config": {
+      "endpoint": "https://rei-neuroadapt-api.reilabs.org/api/v1",
+      "input_paths": [
+        "values.z_r0_fc_resload_proxy_gw",
+        "values.z_r0_fc_load_eve_D_gw",
+        "values.z_r0_om_w100_mean",
+        "values.z_r0_om_temp_mean",
+        "values.z_r0_p_eve_prev",
+        "values.z_r0_p_midday_prev",
+        "values.z_r0_is_wknd_D",
+        "values.z_r0_cos_doy_D"
+      ],
+      "targets": [
+        "values.raw_p_eve_eur",
+        "values.raw_p_midday_eur",
+        "values.raw_p_night_eur",
+        "values.raw_p_spread_eur"
+      ],
+      "max_samples": 128,
+      "max_support": 128,
+      "max_branches": 128,
+      "required_support": 6,
+      "max_distance": 1.0,
+      "conditioning": "kernel",
+      "numeric_transport": "linear_residual",
+      "bandwidth": 0.2,
+      "numeric_ridge": 40.0,
+      "prior_strength": 2.0,
+      "numeric_min_skill": 0.0
+    },
+    "headline_metrics": {
+      "adapt1_linres_es_4d_eur_mwh": 58.762184,
+      "adapt1_linres_mean_crps": 24.465708,
+      "adapt1_linres_cov90_pct": 85.17,
+      "adapt1_linres_desk_1pct_eur_mwh_day": 71.8259,
+      "adapt1_linres_bess_1pct_eur_mwh_day": 61.0373,
+      "adapt1_linres_hedge_save_1pct_eur_mwh_day": 10.7886,
+      "adapt1_linres_var99_peak_breaches": 11,
+      "adapt1_linres_var99_peak_n": 450,
+      "adapt1_linres_var99_peak_p_cc": 0.018099,
+      "adapt1_linres_var99_peak_basel_zone": "YELLOW",
+      "adapt1_linres_var01_midday_breaches": 10,
+      "adapt1_linres_var01_midday_basel_zone": "YELLOW",
+      "gjr_variants_beaten_on_es": "12/12",
+      "best_gjr_model": "AR1_GJR_DCC_GARCH_FHS_Roll128_r21",
+      "best_gjr_es_4d_eur_mwh": 63.0849,
+      "best_gjr_es_p_holm_daily": 0.000381,
+      "best_gjr_es_p_holm_weekly": 0.0031,
+      "gjr_desk_1pct_min_eur_mwh_day": 63.2,
+      "gjr_desk_1pct_max_eur_mwh_day": 67.44,
+      "gjr_var99_basel_zones": {
+        "GREEN": 1,
+        "YELLOW": 8,
+        "RED": 3,
+        "green_model_breaches": "GJR_DCC_GARCH_FHS_Roll512_r21 (6/450)"
+      },
+      "adapt1_kernel_plain_empirical_es_4d_eur_mwh": 65.255469,
+      "adapt1_kernel_vs_linres_p_holm": 2.1e-06,
+      "online_q_hgbr_es_4d_eur_mwh": 65.996,
+      "online_q_hgbr_desk_1pct_eur_mwh_day": 65.08,
+      "online_q_hgbr_var99_peak_breaches": 30,
+      "online_q_hgbr_var99_peak_basel_zone": "RED",
+      "offline_local_linres_nw_es_4d_eur_mwh": 57.7976,
+      "offline_local_linres_nw_desk_1pct_eur_mwh_day": 71.98,
+      "offline_local_linres_nw_var99_peak_breaches": 15,
+      "offline_local_linres_nw_var99_peak_basel_zone": "RED",
+      "offline_local_linres_nw_vs_adapt1_p_holm_daily": 0.0448,
+      "offline_local_linres_nw_vs_adapt1_p_holm_weekly": 0.1314,
+      "tier2_heteroridge_es_4d_eur_mwh": 59.2629,
+      "tier2_heteroridge_desk_1pct_eur_mwh_day": 73.47,
+      "tier2_heteroridge_var99_peak_breaches": 9,
+      "tier2_heteroridge_var99_peak_basel_zone": "YELLOW"
+    },
+    "leaderboard_19_traced_models": [
+      {
+        "model": "Offline Local Linear Regression",
+        "trace_tag": "local_linres_nw",
+        "es_4d": 57.7976,
+        "desk_1pct": 71.98,
+        "var99_breaches": 15,
+        "basel_zone": "RED"
+      },
+      {
+        "model": "Live_Adapt1_W128_LinRes",
+        "trace_tag": "adapt1_linres",
+        "es_4d": 58.7622,
+        "desk_1pct": 71.83,
+        "var99_breaches": 11,
+        "basel_zone": "YELLOW"
+      },
+      {
+        "model": "Tier2_HeteroRidge",
+        "trace_tag": "tier2_heteroridge",
+        "es_4d": 59.2629,
+        "desk_1pct": 73.47,
+        "var99_breaches": 9,
+        "basel_zone": "YELLOW"
+      },
+      {
+        "model": "AR1_GJR_DCC_GARCH_FHS_Roll128_r21",
+        "trace_tag": "ar1_gjr_fhs_r128_r21",
+        "es_4d": 63.0849,
+        "desk_1pct": 64.91,
+        "var99_breaches": 14,
+        "basel_zone": "RED"
+      },
+      {
+        "model": "AR1_GJR_DCC_GARCH_FHS_Roll512_r21",
+        "trace_tag": "ar1_gjr_fhs_r512_r21",
+        "es_4d": 63.1752,
+        "desk_1pct": 66.09,
+        "var99_breaches": 10,
+        "basel_zone": "YELLOW"
+      },
+      {
+        "model": "AR1_GJR_DCC_GARCH_FHS_Expand_r21",
+        "trace_tag": "ar1_gjr_fhs_exp_r21",
+        "es_4d": 63.3713,
+        "desk_1pct": 65.81,
+        "var99_breaches": 10,
+        "basel_zone": "YELLOW"
+      },
+      {
+        "model": "GJR_DCC_GARCH_FHS_Roll512_r21",
+        "trace_tag": "gjr_fhs_r512_r21",
+        "es_4d": 63.7486,
+        "desk_1pct": 63.42,
+        "var99_breaches": 6,
+        "basel_zone": "GREEN"
+      },
+      {
+        "model": "GJR_DCC_GARCH_FHS_Expand_r21",
+        "trace_tag": "gjr_fhs_exp_r21",
+        "es_4d": 63.8347,
+        "desk_1pct": 63.32,
+        "var99_breaches": 10,
+        "basel_zone": "YELLOW"
+      },
+      {
+        "model": "GJR_DCC_GARCH_FHS_Roll256_r21",
+        "trace_tag": "gjr_fhs_r256_r21",
+        "es_4d": 63.8402,
+        "desk_1pct": 63.22,
+        "var99_breaches": 10,
+        "basel_zone": "YELLOW"
+      },
+      {
+        "model": "GJR_DCC_GARCH_FHS_Roll256_r5",
+        "trace_tag": "gjr_fhs_r256_r5",
+        "es_4d": 63.8807,
+        "desk_1pct": 63.2,
+        "var99_breaches": 10,
+        "basel_zone": "YELLOW"
+      },
+      {
+        "model": "AR1_GJR_DCC_GARCH_FHS_Roll256_r5",
+        "trace_tag": "ar1_gjr_fhs_r256_r5",
+        "es_4d": 63.9437,
+        "desk_1pct": 66.85,
+        "var99_breaches": 10,
+        "basel_zone": "YELLOW"
+      },
+      {
+        "model": "EWMA_EmpResid_Copula",
+        "trace_tag": "ewma_copula",
+        "es_4d": 64.0452,
+        "desk_1pct": 63.99,
+        "var99_breaches": 7,
+        "basel_zone": "GREEN"
+      },
+      {
+        "model": "AR1_GJR_DCC_GARCH_FHS_Roll256_r21",
+        "trace_tag": "ar1_gjr_fhs_r256_r21",
+        "es_4d": 64.0713,
+        "desk_1pct": 66.7,
+        "var99_breaches": 10,
+        "basel_zone": "YELLOW"
+      },
+      {
+        "model": "AR1_GJR_DCC_GARCH_StudentT_Expand_r21",
+        "trace_tag": "ar1_gjr_st_exp_r21",
+        "es_4d": 64.0715,
+        "desk_1pct": 66.35,
+        "var99_breaches": 21,
+        "basel_zone": "RED"
+      },
+      {
+        "model": "AR1_GJR_DCC_GARCH_StudentT_Roll256_r21",
+        "trace_tag": "ar1_gjr_st_r256_r21",
+        "es_4d": 64.4097,
+        "desk_1pct": 67.44,
+        "var99_breaches": 18,
+        "basel_zone": "RED"
+      },
+      {
+        "model": "GJR_DCC_GARCH_FHS_Roll128_r21",
+        "trace_tag": "gjr_fhs_r128_r21",
+        "es_4d": 64.4723,
+        "desk_1pct": 63.72,
+        "var99_breaches": 10,
+        "basel_zone": "YELLOW"
+      },
+      {
+        "model": "Live_Adapt1_W128_Kernel",
+        "trace_tag": "adapt1_kernel",
+        "es_4d": 65.2555,
+        "desk_1pct": 66.09,
+        "var99_breaches": 11,
+        "basel_zone": "YELLOW"
+      },
+      {
+        "model": "Online_Q_HGBR_GaussCop",
+        "trace_tag": "q_hgbr",
+        "es_4d": 65.996,
+        "desk_1pct": 65.08,
+        "var99_breaches": 30,
+        "basel_zone": "RED"
+      },
+      {
+        "model": "Own_PriorCF_W128",
+        "trace_tag": "own_prior_cf",
+        "es_4d": 78.3261,
+        "desk_1pct": 55.45,
+        "var99_breaches": 14,
+        "basel_zone": "RED"
+      }
+    ],
+    "regime_and_evaluation_notes": [
+      "Without linear_residual transport, plain empirical weighting (Live_Adapt1_W128_Kernel, ES 65.26) trails all 12 GJR-GARCH variants because bounded convex combinations cannot extrapolate upward price drift.",
+      "Offline Local Linear Regression (ES 57.80, Desk 1% EUR 71.98) edges Adapt-1 on ES (daily p_H=0.0448, weekly p_H=0.1314) using the identical pre-auction covariates, but enters Basel RED on upward peak VaR99 (15/450 vs Adapt-1 YELLOW 11/450).",
+      "Offline Tier2_HeteroRidge (ES 59.26, Desk 1% EUR 73.47, YELLOW 9/450) ties Adapt-1 on ES (p_H=0.6544) and posts the highest 1%-fee desk PnL.",
+      "Exporting at most 128 scenarios truncates outer tail mass if max_support > 128 (Live_Adapt1_W512_Kernel degrades to ES 72.22, RED 23/450), so lossless joint clouds require W <= 128."
+    ]
+  },
+  "exp98b_catalyst_implied_vol_regime": {
+    "description": "Operating boundary: daily multi-asset returns (SPY/TLT/HYG/GLD) with forward options implied vol (VIX, VIX/VIX3M, VVIX, OVX, GVZ, VIX/RV5) and scheduled Federal Reserve FOMC / BLS CPI release dates.",
+    "window": {
+      "dev_cal": "2019-01-02..2023-12-29 (n=1,258)",
+      "sealed_oos": "2024-01-02..2026-11-20 (n=726, 151 ISO weeks)",
+      "ex_ante_fomc_cpi": "n=55 scheduled decision/release days",
+      "ex_ante_calm_before_storm": "n=154 days",
+      "ex_ante_vix_inversion": "n=53 days",
+      "post_2026_09": "n=58 days (12 ISO weeks)"
+    },
+    "headline_metrics": {
+      "full_oos_best_gjr_model": "GJR_DCC_GARCH_FHS_Roll256_r21",
+      "full_oos_best_gjr_es_4d": 1.13929,
+      "full_oos_adapt1_impliedvol_w128_es_4d": 1.14548,
+      "full_oos_adapt1_raw_w128_es_4d": 1.15293,
+      "full_oos_vix_scaled_prior_cf_es_4d": 1.14579,
+      "full_oos_adapt1_vs_best_gjr_p_holm": 1.0,
+      "fomc_cpi_adapt1_impliedvol_es_4d": 1.28762,
+      "fomc_cpi_gjr_roll256_es_4d": 1.29193,
+      "fomc_cpi_best_overall_model": "GJR_StudentT_Roll256_r21",
+      "fomc_cpi_best_overall_es_4d": 1.27684,
+      "calm_before_storm_best_gjr_es_4d": 1.15264,
+      "calm_before_storm_adapt1_impliedvol_es_4d": 1.17235
+    },
+    "regime_takeaway": "Asset-specific MLE GJR-DCC-GARCH-FHS leads full-period daily multi-asset financial ES (1.139 vs 1.145) and calm-before-storm days where the equity variance risk premium over-scales fixed-income/gold legs; pure Adapt-1 conditioning improves significantly over raw unconditional priors (p_H=0.0086) and beats GJR on VIX-inversion FRTB capital cost (p_H=0.0110) but does not beat MLE GJR on full-OOS daily return ES."
+  },
+  "exp79b_90c_crypto_cascade": {
+    "universe": [
+      "BTC",
+      "ETH",
+      "SOL",
+      "XRP"
+    ],
+    "universe_note": "Raw Binance 1h spot & perpetual futures panel covers BTC, ETH, SOL, and XRP (5D target vector: log inter-event duration + 4 coin Garman-Klass log-magnitudes).",
+    "window": {
+      "sealed_oos": "2025-09-01T02:00:00Z..2026-11-23T14:00:00Z (n=1,149 cascade events, 65 ISO weeks)",
+      "oct2025_crash_step_index": 91,
+      "oct2025_crash_timestamp_utc": "2025-10-10T23:00:00Z",
+      "oct2025_crash_window_steps": [
+        88,
+        110
+      ]
+    },
+    "overlay_parameters": {
+      "base_leverage": 3.0,
+      "maintenance_margin_liquidation_floor": 0.05,
+      "primary_one_way_fee_bps": 5,
+      "fee_sweep_bps": [
+        0,
+        5,
+        15
+      ],
+      "target_worst_hour_loss_pct": 12.0
+    },
+    "api_config_exp79b": {
+      "endpoint": "https://rei-neuroadapt-api.reilabs.org/api/v1",
+      "input_paths": [
+        "values.f_dt_prev",
+        "values.f_hw24",
+        "values.f_hw168",
+        "values.f_cur_mag",
+        "values.f_ofi_sell",
+        "values.f_ewma_vol"
+      ],
+      "targets": [
+        "values.t_log_dt_next",
+        "values.t_mag_btc",
+        "values.t_mag_eth",
+        "values.t_mag_sol",
+        "values.t_mag_xrp"
+      ],
+      "max_samples": 128,
+      "max_support": 128,
+      "max_branches": 128,
+      "conditioning": "kernel",
+      "numeric_transport": "linear_residual",
+      "bandwidth": 0.18,
+      "numeric_ridge": 50.0
+    },
+    "api_config_exp90c_standalone": {
+      "conditioning": "kernel",
+      "numeric_transport": "linear_residual",
+      "bandwidth": 0.24,
+      "numeric_ridge": 30.0,
+      "max_samples": 128,
+      "max_support": 128,
+      "max_branches": 128
+    },
+    "exp79b_headline_metrics": {
+      "n_events": 1149,
+      "static_1x_spot_return_5bps_pct": -56.534,
+      "static_1x_spot_final_equity_5bps": 0.43466,
+      "static_1x_spot_max_dd_pct": -65.75,
+      "adapt1_rank_es_5d": "1/12",
+      "adapt1_es_5d": 0.696984,
+      "adapt1_oct2025_crash_leverage": 0.0792,
+      "adapt1_oct2025_crash_dd_pct": -28.372,
+      "adapt1_survived_5bps": true,
+      "adapt1_final_equity_5bps": 0.08808,
+      "adapt1_return_5bps_pct": -91.192,
+      "adapt1_max_dd_5bps_pct": -94.288,
+      "ewma_survived_5bps": true,
+      "ewma_final_equity_5bps": 0.08969,
+      "dcc_garch_survived_5bps": true,
+      "dcc_garch_final_equity_5bps": 0.08217,
+      "online_ridge_survived_5bps": true,
+      "online_ridge_final_equity_5bps": 0.10744,
+      "q_hgbr_survived_5bps": false,
+      "q_hgbr_ruin_time_utc": "2026-11-20T16:00:00Z",
+      "static_3x_unhedged_ruin_time_utc": "2026-06-02T23:00:00Z",
+      "exp79b_raw_tsfm_ruin_count": "6/6"
+    },
+    "exp90c_longctx_audit": {
+      "raw_tsfm_total": 32,
+      "raw_tsfm_ruined_5bps": 32,
+      "raw_tsfm_ctx2048_total": 8,
+      "raw_tsfm_ctx2048_ruined_5bps": 8,
+      "raw_tsfm_ruin_date_span_utc": [
+        "2026-06-05T23:00:00Z",
+        "2026-11-20T19:00:00Z"
+      ],
+      "q_hgbr_gausscop_survived_5bps": false,
+      "q_hgbr_gausscop_ruin_time_utc": "2026-11-14T14:00:00Z",
+      "live_adapt1_w128_survived_5bps": true,
+      "live_adapt1_w128_final_equity_5bps": 0.08397,
+      "live_adapt1_w128_oct2025_dd_pct": -27.84,
+      "live_adapt1_w128_oct2025_lev": 0.09,
+      "live_adapt1_airbag_chronos2_ctx2048_survived_5bps": true,
+      "live_adapt1_airbag_chronos2_ctx2048_final_equity_5bps": 0.07656,
+      "live_adapt1_airbag_timesfm3_ctx1024_survived_5bps": false,
+      "ewma_empresid_copula_survived_5bps": true,
+      "ewma_empresid_copula_final_equity_5bps": 0.07594
+    },
+    "leverage_and_fee_sensitivity_notes": [
+      "Unlevered 1x spot lost -56.5% over the 15-month bear cascade, so surviving 3x dynamic books still suffered -92.7% to -95.3% full-period drawdowns at 5 bps.",
+      "At severe 15 bps one-way fees, turnover drag pushes Adapt-1 (step 1117), Online Ridge, and DCC-GARCH-FHS past the 5% liquidation floor, whereas lower-turnover EWMA_EmpResid (-94.21%) stays above 5% in Exp 79B.",
+      "Adapt-1 ranked #1/12 on ES_5D in Exp 79B yet failed VaR99_GK conditional coverage (p_cc=0.0007); in Exp 90C, Adapt-1 wrapping rescued Chronos-2 ctx=2048 to survival (0.0766x) while wrapped TimesFM-3.0 ctx=1024 still hit liquidation at step 1138."
+    ]
+  },
+  "exp89b_eu_dunkelflaute_wrapping": {
+    "window": {
+      "warmup": "2024-01-03..2024-08-31 (n=242)",
+      "dev_cal": "2024-09-01..2025-12-31 (n=487, 71 ISO weeks)",
+      "sealed_oos": "2026-01-01..2026-11-19 (n=323, 47 ISO weeks)",
+      "post_2026_09": "2026-09-01..2026-11-19 (n=80, 12 ISO weeks)",
+      "maturation_gap_hours": 10.0,
+      "primary_tsfm_ctx": 1024
+    },
+    "dispatch_overlay_parameters": {
+      "peak_block_hours": 4.0,
+      "days_per_year": 365.0,
+      "standby_cost_eur_mwh": 50.0,
+      "headline_voll_ratio": 20,
+      "headline_voll_eur_mwh": 1000.0,
+      "severe_outage_threshold_mw": 2500.0
+    },
+    "api_configs": {
+      "airbag_chronos2_ctx1024": {
+        "residual_form": "pit_z",
+        "conditioning": "kernel",
+        "numeric_transport": "none",
+        "bandwidth": 0.22,
+        "max_samples": 128,
+        "max_support": 128,
+        "max_branches": 128,
+        "input_paths": [
+          "values.x_resload_da_s",
+          "values.x_wshort_05",
+          "values.x_log_ovx_t",
+          "values.x_eurusd_stress_t",
+          "values.tsfm_iqr_rank"
+        ],
+        "targets": [
+          "values.r_y_resload_s",
+          "values.r_y_wshort_north_s",
+          "values.r_y_wshort_south_s",
+          "values.r_y_log_peve_s"
+        ]
+      },
+      "airbag_timesfm3_ctx1024": {
+        "residual_form": "add_resid",
+        "conditioning": "kernel",
+        "numeric_transport": "linear_residual",
+        "bandwidth": 0.24,
+        "numeric_ridge": 30.0,
+        "max_samples": 128,
+        "max_support": 128,
+        "max_branches": 128
+      },
+      "airbag_disc_chronos2_ctx1024": {
+        "residual_form": "pit_z",
+        "conditioning": "kernel",
+        "numeric_transport": "none",
+        "bandwidth": 0.22,
+        "max_samples": 128,
+        "max_support": 128,
+        "max_branches": 128,
+        "autonomous_projection": {
+          "enabled": true,
+          "n_candidate_features": 9,
+          "n_discovered_features": 6,
+          "discovered_input_paths": [
+            "values.z_x_log_peve_prev_t",
+            "values.z_x_resload_da_s",
+            "values.z_GPRD",
+            "values.z_x_eurusd_stress_t",
+            "values.z_x_log_ovx_t",
+            "values.z_x_wshort_05"
+          ]
+        },
+        "targets": [
+          "values.r_y_resload_s",
+          "values.r_y_wshort_north_s",
+          "values.r_y_wshort_south_s",
+          "values.r_y_log_peve_s"
+        ]
+      }
+    },
+    "headline_metrics": {
+      "n_models_evaluated": 25,
+      "adapt1_airbag_chronos2_rank_es_4d": "2/25",
+      "adapt1_airbag_chronos2_es_4d": 0.771524,
+      "adapt1_airbag_chronos2_rank_cost_20x": "2/25",
+      "adapt1_airbag_chronos2_cost_20x_m_eur_yr": 1000.7915,
+      "adapt1_airbag_chronos2_outages_ge_2p5gw": 7,
+      "adapt1_airbag_chronos2_var95_pct": 6.19,
+      "adapt1_airbag_chronos2_var95_p_cc": 0.1693,
+      "chronos2_ctx1024_raw_es_4d": 0.778858,
+      "chronos2_ctx1024_raw_cost_20x_m_eur_yr": 1125.2769,
+      "chronos2_ctx1024_raw_outages_ge_2p5gw": 14,
+      "chronos2_ctx1024_raw_var95_pct": 10.53,
+      "chronos2_ctx1024_raw_var95_p_cc": 0.000204,
+      "timesfm3_ctx1024_raw_es_4d": 0.923938,
+      "timesfm3_ctx1024_raw_cost_20x_m_eur_yr": 1811.385,
+      "timesfm3_ctx1024_raw_outages_ge_2p5gw": 47,
+      "timesfm3_ctx1024_raw_var95_pct": 27.55,
+      "timesfm3_ctx1024_raw_var95_p_cc": 3.41e-39,
+      "adapt1_airbag_timesfm3_es_4d": 0.810021,
+      "adapt1_airbag_timesfm3_cost_20x_m_eur_yr": 1111.6362,
+      "adapt1_airbag_timesfm3_outages_ge_2p5gw": 9,
+      "adapt1_airbag_timesfm3_var95_pct": 5.88,
+      "adapt1_airbag_timesfm3_var95_p_cc": 0.5626,
+      "aci_chronos2_es_4d": 0.772063,
+      "aci_chronos2_cost_20x_m_eur_yr": 1026.3154,
+      "aci_chronos2_outages_ge_2p5gw": 9,
+      "aci_timesfm3_es_4d": 0.820775,
+      "aci_timesfm3_cost_20x_m_eur_yr": 1010.2301,
+      "aci_timesfm3_outages_ge_2p5gw": 2,
+      "adapt1_airbag_chronos2_vs_aci_chronos2_cost_20x_p_holm": 0.8796,
+      "adapt1_airbag_chronos2_vs_aci_timesfm3_cost_20x_p_holm": 0.8796,
+      "adapt1_airbag_chronos2_vs_aci_chronos2_es_4d_p_holm": 1.0,
+      "adapt1_airbag_chronos2_vs_aci_timesfm3_es_4d_p_holm": 0.0307,
+      "adapt1_w128_standalone_es_4d": 0.87122,
+      "adapt1_w128_standalone_cost_20x_m_eur_yr": 1266.2333,
+      "adapt1_w128_standalone_outages_ge_2p5gw": 10,
+      "own_prior_cf_es_4d": 1.200955,
+      "own_prior_cf_cost_20x_m_eur_yr": 1904.7907,
+      "adapt1_airbag_disc_chronos2_rank_es_4d": "1/25",
+      "adapt1_airbag_disc_chronos2_es_4d": 0.769808,
+      "adapt1_airbag_disc_chronos2_es_4d_first150": 0.786943,
+      "adapt1_airbag_disc_chronos2_es_4d_post2026_09": 0.850472,
+      "adapt1_airbag_disc_chronos2_rank_cost_20x_csv9": "1/9",
+      "adapt1_airbag_disc_chronos2_cost_20x_m_eur_yr": 991.8725,
+      "adapt1_airbag_disc_chronos2_outages_ge_2p5gw": 7,
+      "adapt1_airbag_disc_chronos2_var95_breaches": 19,
+      "adapt1_airbag_disc_chronos2_var95_pct": 5.88,
+      "adapt1_airbag_disc_chronos2_var95_p_pof": 0.4785,
+      "adapt1_airbag_disc_chronos2_var95_p_cc": 0.2361,
+      "adapt1_airbag_disc_chronos2_var95_pass_cc_05": true,
+      "adapt1_airbag_disc_vs_authored_delta_es_4d": -0.001716,
+      "adapt1_airbag_disc_vs_authored_delta_cost_20x_m_eur_yr": -8.919,
+      "adapt1_airbag_disc_vs_authored_es_4d_p_raw": 0.221471,
+      "adapt1_airbag_disc_vs_authored_es_4d_p_holm_m24": 0.664413,
+      "adapt1_airbag_disc_vs_authored_cost_20x_p_raw": 0.295411,
+      "adapt1_airbag_disc_vs_authored_cost_20x_p_holm_m8": 0.590822,
+      "adapt1_airbag_disc_vs_raw_chronos2_es_4d_p_holm_m24": 0.030143,
+      "adapt1_airbag_disc_vs_aci_chronos2_es_4d_p_holm_m24": 0.803247,
+      "adapt1_airbag_disc_vs_aci_timesfm3_es_4d_p_holm_m24": 0.02104
+    },
+    "discovery_full_323d_reconciliation": {
+      "n_oos_days": 323,
+      "n_iso_weeks": 47,
+      "csv_rounding_max_abs_diff": {
+        "es_4d_mean_abs_diff": 1.125e-08,
+        "cost_20x_m_eur_yr_abs_diff": 5.304e-08
+      },
+      "strictly_improves_section_01_headline": true,
+      "authored_airbag_chronos2": {
+        "es_4d_full323": 0.771524,
+        "es_4d_first150": 0.790773,
+        "es_4d_post2026_09": 0.848322,
+        "cost_20x_m_eur_yr": 1000.7915,
+        "outages_ge_2p5gw": 7,
+        "var95_breaches": 20,
+        "var95_pct": 6.19,
+        "var95_p_cc": 0.1693,
+        "rank_es_4d_of_25": 2,
+        "rank_cost_20x_of_9_csv": 2
+      },
+      "discovery_airbag_chronos2": {
+        "es_4d_full323": 0.769808,
+        "es_4d_first150": 0.786943,
+        "es_4d_post2026_09": 0.850472,
+        "cost_20x_m_eur_yr": 991.8725,
+        "outages_ge_2p5gw": 7,
+        "var95_breaches": 19,
+        "var95_pct": 5.88,
+        "var95_p_pof": 0.4785,
+        "var95_p_cc": 0.2361,
+        "var95_pass_cc_05": true,
+        "rank_es_4d_of_25": 1,
+        "rank_cost_20x_of_9_csv": 1
+      },
+      "direct_vs_authored": {
+        "full_323d_es_4d": {
+          "n_clusters": 47,
+          "rel_gain_pct": 0.21,
+          "a_better": true,
+          "primary_test": "NW_HAC",
+          "p_raw": 0.221471,
+          "nw_t": -1.2226,
+          "p_holm": 0.664413,
+          "sig_holm_05": false,
+          "m_family": 24
+        },
+        "full_323d_cost_20x": {
+          "n_clusters": 47,
+          "rel_gain_pct": 0.846,
+          "a_better": true,
+          "primary_test": "NW_HAC",
+          "p_raw": 0.295411,
+          "nw_t": -1.0463,
+          "p_holm": 0.590822,
+          "sig_holm_05": false,
+          "m_family": 8
+        },
+        "first_150d_es_4d": {
+          "n_clusters": 22,
+          "rel_gain_pct": 0.47,
+          "a_better": true,
+          "primary_test": "MC_SIGN_FLIP_PERM",
+          "p_raw": 0.03769
+        },
+        "post_2026_09_es_4d": {
+          "n_clusters": 12,
+          "rel_gain_pct": -0.274,
+          "a_better": false,
+          "primary_test": "EXACT_SIGN_FLIP_PERM",
+          "p_raw": 0.463867
+        }
+      },
+      "leaderboard_es_4d_25": [
+        {
+          "rank_es_4d": 1,
+          "model_col": "es_adapt1_airbag_disc_chronos2",
+          "es_4d": 0.769808
+        },
+        {
+          "rank_es_4d": 2,
+          "model_col": "es_adapt1_airbag_c2",
+          "es_4d": 0.771524
+        },
+        {
+          "rank_es_4d": 3,
+          "model_col": "es_aci_c2",
+          "es_4d": 0.772063
+        },
+        {
+          "rank_es_4d": 4,
+          "model_col": "es_wrap_prior_c2",
+          "es_4d": 0.772063
+        },
+        {
+          "rank_es_4d": 5,
+          "model_col": "es_c2_ctx1024_cov_gc",
+          "es_4d": 0.778858
+        },
+        {
+          "rank_es_4d": 6,
+          "model_col": "es_c2_ctx512_cov_gc",
+          "es_4d": 0.784699
+        },
+        {
+          "rank_es_4d": 7,
+          "model_col": "es_c2_ctx256_cov_gc",
+          "es_4d": 0.791676
+        },
+        {
+          "rank_es_4d": 8,
+          "model_col": "es_c2_ctx1024_cov_ind",
+          "es_4d": 0.801429
+        },
+        {
+          "rank_es_4d": 9,
+          "model_col": "es_adapt1_airbag_t3",
+          "es_4d": 0.810021
+        },
+        {
+          "rank_es_4d": 10,
+          "model_col": "es_aci_t3",
+          "es_4d": 0.820775
+        },
+        {
+          "rank_es_4d": 11,
+          "model_col": "es_online_ridge",
+          "es_4d": 0.820899
+        },
+        {
+          "rank_es_4d": 12,
+          "model_col": "es_tier2_heteroridge",
+          "es_4d": 0.82351
+        },
+        {
+          "rank_es_4d": 13,
+          "model_col": "es_wrap_prior_t3",
+          "es_4d": 0.827467
+        },
+        {
+          "rank_es_4d": 14,
+          "model_col": "es_adapt1_w128_standalone",
+          "es_4d": 0.87122
+        },
+        {
+          "rank_es_4d": 15,
+          "model_col": "es_t3_ctx1024_to_gc",
+          "es_4d": 0.88657
+        },
+        {
+          "rank_es_4d": 16,
+          "model_col": "es_c2_ctx1024_to_gc",
+          "es_4d": 0.891206
+        },
+        {
+          "rank_es_4d": 17,
+          "model_col": "es_q_hgbr",
+          "es_4d": 0.896717
+        },
+        {
+          "rank_es_4d": 18,
+          "model_col": "es_t3_ctx256_cov_gc",
+          "es_4d": 0.91725
+        },
+        {
+          "rank_es_4d": 19,
+          "model_col": "es_t3_ctx512_cov_gc",
+          "es_4d": 0.9198
+        },
+        {
+          "rank_es_4d": 20,
+          "model_col": "es_t3_ctx1024_to_ind",
+          "es_4d": 0.923691
+        },
+        {
+          "rank_es_4d": 21,
+          "model_col": "es_t3_ctx1024_cov_gc",
+          "es_4d": 0.923938
+        },
+        {
+          "rank_es_4d": 22,
+          "model_col": "es_c2_ctx1024_to_ind",
+          "es_4d": 0.928888
+        },
+        {
+          "rank_es_4d": 23,
+          "model_col": "es_t3_ctx1024_cov_ind",
+          "es_4d": 0.943826
+        },
+        {
+          "rank_es_4d": 24,
+          "model_col": "es_ewma_copula",
+          "es_4d": 1.053127
+        },
+        {
+          "rank_es_4d": 25,
+          "model_col": "es_own_prior_cf",
+          "es_4d": 1.200955
+        }
+      ],
+      "leaderboard_cost_20x_csv9": [
+        {
+          "rank_cost_20x_csv9": 1,
+          "model_col": "cost20x_adapt1_airbag_disc_chronos2",
+          "cost_20x_m_eur_yr": 991.8725
+        },
+        {
+          "rank_cost_20x_csv9": 2,
+          "model_col": "cost20x_adapt1_airbag_c2_eur",
+          "cost_20x_m_eur_yr": 1000.7915
+        },
+        {
+          "rank_cost_20x_csv9": 3,
+          "model_col": "cost20x_aci_t3_eur",
+          "cost_20x_m_eur_yr": 1010.2301
+        },
+        {
+          "rank_cost_20x_csv9": 4,
+          "model_col": "cost20x_aci_c2_eur",
+          "cost_20x_m_eur_yr": 1026.3154
+        },
+        {
+          "rank_cost_20x_csv9": 5,
+          "model_col": "cost20x_adapt1_airbag_t3_eur",
+          "cost_20x_m_eur_yr": 1111.6362
+        },
+        {
+          "rank_cost_20x_csv9": 6,
+          "model_col": "cost20x_c2_ctx1024_cov_gc_eur",
+          "cost_20x_m_eur_yr": 1125.2769
+        },
+        {
+          "rank_cost_20x_csv9": 7,
+          "model_col": "cost20x_adapt1_w128_standalone_eur",
+          "cost_20x_m_eur_yr": 1266.2333
+        },
+        {
+          "rank_cost_20x_csv9": 8,
+          "model_col": "cost20x_t3_ctx1024_cov_gc_eur",
+          "cost_20x_m_eur_yr": 1811.385
+        },
+        {
+          "rank_cost_20x_csv9": 9,
+          "model_col": "cost20x_own_prior_cf_eur",
+          "cost_20x_m_eur_yr": 1904.7907
+        }
+      ],
+      "nwhac_holm_es_4d_m24": {
+        "m_family": 24,
+        "n_holm_wins": 21,
+        "n_holm_losses": 0,
+        "comparisons": {
+          "es_adapt1_airbag_c2": {
+            "n_clusters": 47,
+            "rel_gain_pct": 0.21,
+            "a_better": true,
+            "primary_test": "NW_HAC",
+            "p_raw": 0.221471,
+            "nw_t": -1.2226,
+            "p_holm": 0.664413,
+            "sig_holm_05": false,
+            "m_family": 24
+          },
+          "es_adapt1_airbag_t3": {
+            "n_clusters": 47,
+            "rel_gain_pct": 4.875,
+            "a_better": true,
+            "primary_test": "NW_HAC",
+            "p_raw": 0.001556,
+            "nw_t": -3.164,
+            "p_holm": 0.011689,
+            "sig_holm_05": true,
+            "m_family": 24
+          },
+          "es_adapt1_w128_standalone": {
+            "n_clusters": 47,
+            "rel_gain_pct": 11.592,
+            "a_better": true,
+            "primary_test": "NW_HAC",
+            "p_raw": 3.8926e-08,
+            "nw_t": -5.4957,
+            "p_holm": 6.6173e-07,
+            "sig_holm_05": true,
+            "m_family": 24
+          },
+          "es_aci_c2": {
+            "n_clusters": 47,
+            "rel_gain_pct": 0.293,
+            "a_better": true,
+            "primary_test": "NW_HAC",
+            "p_raw": 0.401625,
+            "nw_t": -0.8387,
+            "p_holm": 0.803247,
+            "sig_holm_05": false,
+            "m_family": 24
+          },
+          "es_aci_t3": {
+            "n_clusters": 47,
+            "rel_gain_pct": 6.117,
+            "a_better": true,
+            "primary_test": "NW_HAC",
+            "p_raw": 0.004208,
+            "nw_t": -2.8621,
+            "p_holm": 0.02104,
+            "sig_holm_05": true,
+            "m_family": 24
+          },
+          "es_c2_ctx1024_cov_gc": {
+            "n_clusters": 47,
+            "rel_gain_pct": 1.14,
+            "a_better": true,
+            "primary_test": "NW_HAC",
+            "p_raw": 0.007536,
+            "nw_t": -2.6722,
+            "p_holm": 0.030143,
+            "sig_holm_05": true,
+            "m_family": 24
+          },
+          "es_t3_ctx1024_cov_gc": {
+            "n_clusters": 47,
+            "rel_gain_pct": 16.161,
+            "a_better": true,
+            "primary_test": "NW_HAC",
+            "p_raw": 3.4444e-06,
+            "nw_t": -4.6424,
+            "p_holm": 4.4777e-05,
+            "sig_holm_05": true,
+            "m_family": 24
+          },
+          "es_c2_ctx1024_cov_ind": {
+            "n_clusters": 47,
+            "rel_gain_pct": 3.87,
+            "a_better": true,
+            "primary_test": "NW_HAC",
+            "p_raw": 1.0104e-08,
+            "nw_t": -5.729,
+            "p_holm": 1.9197e-07,
+            "sig_holm_05": true,
+            "m_family": 24
+          },
+          "es_t3_ctx1024_cov_ind": {
+            "n_clusters": 47,
+            "rel_gain_pct": 17.896,
+            "a_better": true,
+            "primary_test": "NW_HAC",
+            "p_raw": 1.0335e-06,
+            "nw_t": -4.8852,
+            "p_holm": 1.5502e-05,
+            "sig_holm_05": true,
+            "m_family": 24
+          },
+          "es_c2_ctx1024_to_gc": {
+            "n_clusters": 47,
+            "rel_gain_pct": 13.462,
+            "a_better": true,
+            "primary_test": "NW_HAC",
+            "p_raw": 9.1568e-09,
+            "nw_t": -5.7457,
+            "p_holm": 1.8314e-07,
+            "sig_holm_05": true,
+            "m_family": 24
+          },
+          "es_t3_ctx1024_to_gc": {
+            "n_clusters": 47,
+            "rel_gain_pct": 13.113,
+            "a_better": true,
+            "primary_test": "NW_HAC",
+            "p_raw": 1.3067e-08,
+            "nw_t": -5.6852,
+            "p_holm": 2.352e-07,
+            "sig_holm_05": true,
+            "m_family": 24
+          },
+          "es_c2_ctx1024_to_ind": {
+            "n_clusters": 47,
+            "rel_gain_pct": 16.861,
+            "a_better": true,
+            "primary_test": "NW_HAC",
+            "p_raw": 1.7873e-12,
+            "nw_t": -7.0501,
+            "p_holm": 3.9322e-11,
+            "sig_holm_05": true,
+            "m_family": 24
+          },
+          "es_t3_ctx1024_to_ind": {
+            "n_clusters": 47,
+            "rel_gain_pct": 16.51,
+            "a_better": true,
+            "primary_test": "NW_HAC",
+            "p_raw": 1.144e-11,
+            "nw_t": -6.7871,
+            "p_holm": 2.4025e-10,
+            "sig_holm_05": true,
+            "m_family": 24
+          },
+          "es_c2_ctx512_cov_gc": {
+            "n_clusters": 47,
+            "rel_gain_pct": 1.869,
+            "a_better": true,
+            "primary_test": "NW_HAC",
+            "p_raw": 0.001461,
+            "nw_t": -3.1823,
+            "p_holm": 0.011689,
+            "sig_holm_05": true,
+            "m_family": 24
+          },
+          "es_c2_ctx256_cov_gc": {
+            "n_clusters": 47,
+            "rel_gain_pct": 2.734,
+            "a_better": true,
+            "primary_test": "NW_HAC",
+            "p_raw": 2.9035e-05,
+            "nw_t": -4.1809,
+            "p_holm": 0.000319,
+            "sig_holm_05": true,
+            "m_family": 24
+          },
+          "es_t3_ctx512_cov_gc": {
+            "n_clusters": 47,
+            "rel_gain_pct": 15.857,
+            "a_better": true,
+            "primary_test": "NW_HAC",
+            "p_raw": 2.4849e-05,
+            "nw_t": -4.2162,
+            "p_holm": 0.000298,
+            "sig_holm_05": true,
+            "m_family": 24
+          },
+          "es_t3_ctx256_cov_gc": {
+            "n_clusters": 47,
+            "rel_gain_pct": 15.589,
+            "a_better": true,
+            "primary_test": "NW_HAC",
+            "p_raw": 5.5338e-07,
+            "nw_t": -5.0068,
+            "p_holm": 8.8541e-06,
+            "sig_holm_05": true,
+            "m_family": 24
+          },
+          "es_wrap_prior_c2": {
+            "n_clusters": 47,
+            "rel_gain_pct": 0.293,
+            "a_better": true,
+            "primary_test": "NW_HAC",
+            "p_raw": 0.401623,
+            "nw_t": -0.8387,
+            "p_holm": 0.803247,
+            "sig_holm_05": false,
+            "m_family": 24
+          },
+          "es_wrap_prior_t3": {
+            "n_clusters": 47,
+            "rel_gain_pct": 6.976,
+            "a_better": true,
+            "primary_test": "NW_HAC",
+            "p_raw": 0.000108,
+            "nw_t": -3.8719,
+            "p_holm": 0.00108,
+            "sig_holm_05": true,
+            "m_family": 24
+          },
+          "es_online_ridge": {
+            "n_clusters": 47,
+            "rel_gain_pct": 6.167,
+            "a_better": true,
+            "primary_test": "NW_HAC",
+            "p_raw": 0.001951,
+            "nw_t": -3.0976,
+            "p_holm": 0.011706,
+            "sig_holm_05": true,
+            "m_family": 24
+          },
+          "es_tier2_heteroridge": {
+            "n_clusters": 47,
+            "rel_gain_pct": 6.488,
+            "a_better": true,
+            "primary_test": "NW_HAC",
+            "p_raw": 0.001016,
+            "nw_t": -3.2861,
+            "p_holm": 0.009141,
+            "sig_holm_05": true,
+            "m_family": 24
+          },
+          "es_q_hgbr": {
+            "n_clusters": 47,
+            "rel_gain_pct": 14.033,
+            "a_better": true,
+            "primary_test": "NW_HAC",
+            "p_raw": 1.0703e-06,
+            "nw_t": -4.8783,
+            "p_holm": 1.5502e-05,
+            "sig_holm_05": true,
+            "m_family": 24
+          },
+          "es_ewma_copula": {
+            "n_clusters": 47,
+            "rel_gain_pct": 26.755,
+            "a_better": true,
+            "primary_test": "NW_HAC",
+            "p_raw": 5.4002e-14,
+            "nw_t": -7.5219,
+            "p_holm": 1.296e-12,
+            "sig_holm_05": true,
+            "m_family": 24
+          },
+          "es_own_prior_cf": {
+            "n_clusters": 47,
+            "rel_gain_pct": 35.998,
+            "a_better": true,
+            "primary_test": "NW_HAC",
+            "p_raw": 1.4755e-13,
+            "nw_t": -7.3894,
+            "p_holm": 3.3936e-12,
+            "sig_holm_05": true,
+            "m_family": 24
+          }
+        }
+      },
+      "nwhac_holm_cost_20x_m8": {
+        "m_family": 8,
+        "n_holm_wins": 3,
+        "n_holm_losses": 0,
+        "comparisons": {
+          "cost20x_adapt1_airbag_c2_eur": {
+            "n_clusters": 47,
+            "rel_gain_pct": 0.846,
+            "a_better": true,
+            "primary_test": "NW_HAC",
+            "p_raw": 0.295411,
+            "nw_t": -1.0463,
+            "p_holm": 0.590822,
+            "sig_holm_05": false,
+            "m_family": 8
+          },
+          "cost20x_adapt1_airbag_t3_eur": {
+            "n_clusters": 47,
+            "rel_gain_pct": 9.709,
+            "a_better": true,
+            "primary_test": "NW_HAC",
+            "p_raw": 0.046016,
+            "nw_t": -1.9952,
+            "p_holm": 0.184065,
+            "sig_holm_05": false,
+            "m_family": 8
+          },
+          "cost20x_adapt1_w128_standalone_eur": {
+            "n_clusters": 47,
+            "rel_gain_pct": 20.872,
+            "a_better": true,
+            "primary_test": "NW_HAC",
+            "p_raw": 2.4421e-06,
+            "nw_t": -4.7129,
+            "p_holm": 1.7095e-05,
+            "sig_holm_05": true,
+            "m_family": 8
+          },
+          "cost20x_aci_c2_eur": {
+            "n_clusters": 47,
+            "rel_gain_pct": 2.957,
+            "a_better": true,
+            "primary_test": "NW_HAC",
+            "p_raw": 0.028466,
+            "nw_t": -2.1908,
+            "p_holm": 0.142328,
+            "sig_holm_05": false,
+            "m_family": 8
+          },
+          "cost20x_aci_t3_eur": {
+            "n_clusters": 47,
+            "rel_gain_pct": 1.754,
+            "a_better": true,
+            "primary_test": "NW_HAC",
+            "p_raw": 0.679131,
+            "nw_t": -0.4136,
+            "p_holm": 0.679131,
+            "sig_holm_05": false,
+            "m_family": 8
+          },
+          "cost20x_c2_ctx1024_cov_gc_eur": {
+            "n_clusters": 47,
+            "rel_gain_pct": 11.697,
+            "a_better": true,
+            "primary_test": "NW_HAC",
+            "p_raw": 0.072006,
+            "nw_t": -1.7991,
+            "p_holm": 0.216017,
+            "sig_holm_05": false,
+            "m_family": 8
+          },
+          "cost20x_t3_ctx1024_cov_gc_eur": {
+            "n_clusters": 47,
+            "rel_gain_pct": 44.208,
+            "a_better": true,
+            "primary_test": "NW_HAC",
+            "p_raw": 1.7445e-07,
+            "nw_t": -5.2247,
+            "p_holm": 1.3956e-06,
+            "sig_holm_05": true,
+            "m_family": 8
+          },
+          "cost20x_own_prior_cf_eur": {
+            "n_clusters": 47,
+            "rel_gain_pct": 47.42,
+            "a_better": true,
+            "primary_test": "NW_HAC",
+            "p_raw": 7.3592e-05,
+            "nw_t": -3.9644,
+            "p_holm": 0.000442,
+            "sig_holm_05": true,
+            "m_family": 8
+          }
+        }
+      }
+    }
+  },
+  "exp90a_us_wind_regime": {
+    "description": "Operating boundary: smooth 4-ISO US wind capacity factors (EIA-930: ERCO, CISO, PJM, MISO; n=318 sealed OOS days, 2026-01-01..2026-11-22) where uncapped ctx=1,536 TSFMs are already well-calibrated and outperform both standalone W=128 Adapt-1 and residual wrapping.",
+    "n_oos_days": 318,
+    "tsfm_context_length": 1536,
+    "models": {
+      "Chronos2_CovExog_GaussCop_ctx1536": {
+        "es_4d": 0.166143,
+        "var99_breaches": 2,
+        "var99_p_cc": 0.7653,
+        "cost_20x_m_usd_yr": 586.28
+      },
+      "Live_Adapt1_Airbag_LongCtx_Chronos2": {
+        "es_4d": 0.167879,
+        "var99_breaches": 6,
+        "var99_p_cc": 0.327,
+        "cost_20x_m_usd_yr": 597.49,
+        "es_vs_base_pct": -1.04,
+        "p_holm": 0.3087
+      },
+      "TimesFM3_CovExog_GaussCop_ctx1536": {
+        "es_4d": 0.166439,
+        "var99_breaches": 3,
+        "var99_p_cc": 0.9667,
+        "cost_20x_m_usd_yr": 577.88
+      },
+      "Live_Adapt1_Airbag_LongCtx_TimesFM3": {
+        "es_4d": 0.169417,
+        "var99_breaches": 4,
+        "var99_p_cc": 0.8608,
+        "cost_20x_m_usd_yr": 615.69,
+        "es_vs_base_pct": -1.79,
+        "p_holm": 0.0155
+      },
+      "Online_Conformal_Airbag_Chronos2": {
+        "es_4d": 0.16678,
+        "var99_breaches": 5,
+        "var99_p_cc": 0.5897,
+        "cost_20x_m_usd_yr": 588.78
+      },
+      "Online_Conformal_Airbag_TimesFM3": {
+        "es_4d": 0.1664,
+        "var99_breaches": 6,
+        "var99_p_cc": 0.327,
+        "cost_20x_m_usd_yr": 574.03
+      },
+      "Live_Adapt1_W128": {
+        "es_4d": 0.172023,
+        "var99_breaches": 7,
+        "var99_p_cc": 0.1519,
+        "cost_20x_m_usd_yr": 613.07
+      }
+    },
+    "reconciliation_note": "Across the two locked ctx=1,536 base TSFMs, raw VaR99 breaches are 3 (TimesFM-3.0) and 2 (Chronos-2) [mean 2.5]; Adapt-1 residual wrapping increases breaches to 4 (TimesFM-3.0) and 6 (Chronos-2) [mean 5.0], while degrading ES by -1.79% and -1.04%. The essay's '3 -> 5' shorthand summarizes this rounded mean shift from well-calibrated base breaches (~3) to wrapped breaches (5). Do not wrap already well-calibrated smooth long-context TSFMs."
+  },
+  "trace_files": {
+    "exp98a_smard_power_oos_trace.csv": {
+      "rows": 450,
+      "date_range": [
+        "2025-08-27",
+        "2026-11-19"
+      ],
+      "key_columns": {
+        "es_adapt1_linres": "Daily 4D Energy Score (EUR/MWh) for Live_Adapt1_W128_LinRes",
+        "es_adapt1_kernel": "Daily 4D Energy Score for Live_Adapt1_W128_Kernel (plain empirical weighting)",
+        "es_local_linres_nw": "Daily 4D Energy Score for Offline Local Linear Regression",
+        "es_q_hgbr": "Daily 4D Energy Score for Online_Q_HGBR_GaussCop",
+        "es_ar1_gjr_fhs_r128_r21": "Daily 4D Energy Score for strongest GJR-GARCH variant (all 12 GJR variants included)",
+        "desk1_<tag>": "Daily 1%-fee simulated BESS + Peak-Hedge net value (EUR/MWh/day)",
+        "var99_br_<tag>": "Binary indicator (0/1) for realized evening price exceeding model upward VaR99"
+      }
+    },
+    "exp79b_crypto_cascade_oos_trace.csv": {
+      "rows": 1149,
+      "time_range_utc": [
+        "2025-09-01T02:00:00Z",
+        "2026-11-23T14:00:00Z"
+      ],
+      "key_columns": {
+        "is_oct2025_crash_step": "1 at the Oct 10 2025 flash-crash evaluation step (step 91, 2025-10-10T23:00:00Z)",
+        "is_oct2025_crash_window": "1 across the Oct 10-12 2025 flash-crash drawdown window (steps 88..110)",
+        "es5d_<tag>": "Per-event 5D Energy Score across all 12 probabilistic models in Exp 79B",
+        "eq5_<tag>": "Simulated 3x overlay equity curve at 5 bps one-way fees (starts at 1.0; 0.0 after <=0.05 liquidation floor)",
+        "lev_<tag>": "Causal dynamic leverage applied at each cascade event"
+      }
+    },
+    "exp90c_longctx_tsfm_survival_summary.csv": {
+      "rows": 45,
+      "key_columns": {
+        "is_raw_tsfm": "1 for all 32 raw Chronos-2 / TimesFM-3.0 variants across ctx=256/512/1024/2048",
+        "context_length": "Uncapped context length (256, 512, 1024, or 2048 for TSFMs)",
+        "survived_5bps": "1 if final_equity_5bps > 0.05, 0 if liquidated (-100%)",
+        "ruin_time_utc": "Exact UTC timestamp of forced liquidation (all 32 raw TSFMs ruined Jun-Nov 2026)"
+      }
+    },
+    "exp89b_eu_dunkelflaute_oos_trace.csv": {
+      "rows": 323,
+      "date_range": [
+        "2026-01-01",
+        "2026-11-19"
+      ],
+      "key_columns": {
+        "es_<tag>": "Daily 4D Energy Score across all 25 leaderboard models (24 original + es_adapt1_airbag_disc_chronos2; proving #1/25 Discovery and #2/25 Authored ranks)",
+        "cost20x_<tag>_eur": "Daily 20x VoLL balancing-reserve dispatch cost in EUR (annualized M EUR/yr = mean * 365 / 1e6)",
+        "outage20x_<tag>": "Binary indicator (0/1) for severe reserve-deficit outage (>= 2.5 GW unserved)",
+        "var95_br_<tag>": "Binary indicator (0/1) for realized evening residual load exceeding model VaR95",
+        "es_adapt1_airbag_disc_chronos2": "Daily 4D Energy Score for full-323d Transition Discovery Airbag(Chronos-2) (6/9 autonomous covariates)",
+        "cost20x_adapt1_airbag_disc_chronos2": "Daily 20x VoLL dispatch cost in EUR for full-323d Discovery Airbag(Chronos-2) (annualized M EUR/yr = mean * 365 / 1e6)",
+        "outage20x_adapt1_airbag_disc_chronos2": "Binary severe-outage indicator (0/1, >= 2.5 GW unserved) for full-323d Discovery Airbag(Chronos-2)",
+        "var95_br_adapt1_airbag_disc_chronos2": "Binary VaR95 residual-load exceedance indicator (0/1) for full-323d Discovery Airbag(Chronos-2)"
+      },
+      "columns_count": 60
+    }
+  },
+  "reconciliation_targets": [
+    {
+      "id": "exp98a_adapt1_linres_es4d",
+      "file": "exp98a_smard_power_oos_trace.csv",
+      "column": "es_adapt1_linres",
+      "agg": "mean",
+      "expected": 58.762184,
+      "tol": 0.005
+    },
+    {
+      "id": "exp98a_best_gjr_es4d",
+      "file": "exp98a_smard_power_oos_trace.csv",
+      "column": "es_ar1_gjr_fhs_r128_r21",
+      "agg": "mean",
+      "expected": 63.0849,
+      "tol": 0.005
+    },
+    {
+      "id": "exp98a_adapt1_kernel_es4d",
+      "file": "exp98a_smard_power_oos_trace.csv",
+      "column": "es_adapt1_kernel",
+      "agg": "mean",
+      "expected": 65.2555,
+      "tol": 0.005
+    },
+    {
+      "id": "exp98a_q_hgbr_es4d",
+      "file": "exp98a_smard_power_oos_trace.csv",
+      "column": "es_q_hgbr",
+      "agg": "mean",
+      "expected": 65.996,
+      "tol": 0.005
+    },
+    {
+      "id": "exp98a_local_linres_nw_es4d",
+      "file": "exp98a_smard_power_oos_trace.csv",
+      "column": "es_local_linres_nw",
+      "agg": "mean",
+      "expected": 57.7976,
+      "tol": 0.005
+    },
+    {
+      "id": "exp98a_adapt1_linres_desk1",
+      "file": "exp98a_smard_power_oos_trace.csv",
+      "column": "desk1_adapt1_linres",
+      "agg": "mean",
+      "expected": 71.8259,
+      "tol": 0.02
+    },
+    {
+      "id": "exp98a_local_linres_nw_desk1",
+      "file": "exp98a_smard_power_oos_trace.csv",
+      "column": "desk1_local_linres_nw",
+      "agg": "mean",
+      "expected": 71.98,
+      "tol": 0.02
+    },
+    {
+      "id": "exp98a_adapt1_linres_var99_breaches",
+      "file": "exp98a_smard_power_oos_trace.csv",
+      "column": "var99_br_adapt1_linres",
+      "agg": "sum",
+      "expected": 11.0,
+      "tol": 1e-06
+    },
+    {
+      "id": "exp98a_local_linres_nw_var99_breaches",
+      "file": "exp98a_smard_power_oos_trace.csv",
+      "column": "var99_br_local_linres_nw",
+      "agg": "sum",
+      "expected": 15.0,
+      "tol": 1e-06
+    },
+    {
+      "id": "exp98a_q_hgbr_var99_breaches",
+      "file": "exp98a_smard_power_oos_trace.csv",
+      "column": "var99_br_q_hgbr",
+      "agg": "sum",
+      "expected": 30.0,
+      "tol": 1e-06
+    },
+    {
+      "id": "exp98a_best_green_gjr_var99_breaches",
+      "file": "exp98a_smard_power_oos_trace.csv",
+      "column": "var99_br_gjr_fhs_r512_r21",
+      "agg": "sum",
+      "expected": 6.0,
+      "tol": 1e-06
+    },
+    {
+      "id": "exp79b_adapt1_es5d",
+      "file": "exp79b_crypto_cascade_oos_trace.csv",
+      "column": "es5d_adapt1",
+      "agg": "mean",
+      "expected": 0.696984,
+      "tol": 0.0005
+    },
+    {
+      "id": "exp79b_adapt1_final_eq5",
+      "file": "exp79b_crypto_cascade_oos_trace.csv",
+      "column": "eq5_adapt1",
+      "agg": "last",
+      "expected": 0.08808,
+      "tol": 0.0005
+    },
+    {
+      "id": "exp79b_static_1x_spot_final_eq5",
+      "file": "exp79b_crypto_cascade_oos_trace.csv",
+      "column": "eq5_static_1x_spot",
+      "agg": "last",
+      "expected": 0.43466,
+      "tol": 0.0005
+    },
+    {
+      "id": "exp79b_ewma_final_eq5",
+      "file": "exp79b_crypto_cascade_oos_trace.csv",
+      "column": "eq5_ewma",
+      "agg": "last",
+      "expected": 0.08969,
+      "tol": 0.0005
+    },
+    {
+      "id": "exp79b_dcc_garch_final_eq5",
+      "file": "exp79b_crypto_cascade_oos_trace.csv",
+      "column": "eq5_dcc_garch",
+      "agg": "last",
+      "expected": 0.08217,
+      "tol": 0.0005
+    },
+    {
+      "id": "exp79b_q_hgbr_ruined_final_eq5",
+      "file": "exp79b_crypto_cascade_oos_trace.csv",
+      "column": "eq5_q_hgbr",
+      "agg": "last",
+      "expected": 0.0,
+      "tol": 1e-06
+    },
+    {
+      "id": "exp79b_adapt1_oct2025_lev",
+      "file": "exp79b_crypto_cascade_oos_trace.csv",
+      "column": "lev_adapt1",
+      "agg": "where_is_oct2025_crash_step_eq_1",
+      "expected": 0.0792,
+      "tol": 0.0005
+    },
+    {
+      "id": "exp90c_raw_tsfm_ruined_count",
+      "file": "exp90c_longctx_tsfm_survival_summary.csv",
+      "column": "survived_5bps",
+      "agg": "count_raw_tsfm_ruined",
+      "expected": 32.0,
+      "tol": 1e-06
+    },
+    {
+      "id": "exp90c_ctx2048_raw_tsfm_ruined_count",
+      "file": "exp90c_longctx_tsfm_survival_summary.csv",
+      "column": "survived_5bps",
+      "agg": "count_ctx2048_raw_tsfm_ruined",
+      "expected": 8.0,
+      "tol": 1e-06
+    },
+    {
+      "id": "exp89b_adapt1_airbag_c2_es4d",
+      "file": "exp89b_eu_dunkelflaute_oos_trace.csv",
+      "column": "es_adapt1_airbag_c2",
+      "agg": "mean",
+      "expected": 0.771524,
+      "tol": 0.0002
+    },
+    {
+      "id": "exp89b_adapt1_airbag_c2_cost20x_meur",
+      "file": "exp89b_eu_dunkelflaute_oos_trace.csv",
+      "column": "cost20x_adapt1_airbag_c2_eur",
+      "agg": "mean_x_365_div_1e6",
+      "expected": 1000.7915,
+      "tol": 0.05
+    },
+    {
+      "id": "exp89b_t3_raw_cost20x_meur",
+      "file": "exp89b_eu_dunkelflaute_oos_trace.csv",
+      "column": "cost20x_t3_ctx1024_cov_gc_eur",
+      "agg": "mean_x_365_div_1e6",
+      "expected": 1811.385,
+      "tol": 0.05
+    },
+    {
+      "id": "exp89b_adapt1_airbag_t3_cost20x_meur",
+      "file": "exp89b_eu_dunkelflaute_oos_trace.csv",
+      "column": "cost20x_adapt1_airbag_t3_eur",
+      "agg": "mean_x_365_div_1e6",
+      "expected": 1111.6362,
+      "tol": 0.05
+    },
+    {
+      "id": "exp89b_t3_raw_outages",
+      "file": "exp89b_eu_dunkelflaute_oos_trace.csv",
+      "column": "outage20x_t3_ctx1024_cov_gc",
+      "agg": "sum",
+      "expected": 47.0,
+      "tol": 1e-06
+    },
+    {
+      "id": "exp89b_adapt1_airbag_t3_outages",
+      "file": "exp89b_eu_dunkelflaute_oos_trace.csv",
+      "column": "outage20x_adapt1_airbag_t3",
+      "agg": "sum",
+      "expected": 9.0,
+      "tol": 1e-06
+    },
+    {
+      "id": "exp89b_c2_raw_outages",
+      "file": "exp89b_eu_dunkelflaute_oos_trace.csv",
+      "column": "outage20x_c2_ctx1024_cov_gc",
+      "agg": "sum",
+      "expected": 14.0,
+      "tol": 1e-06
+    },
+    {
+      "id": "exp89b_adapt1_airbag_c2_outages",
+      "file": "exp89b_eu_dunkelflaute_oos_trace.csv",
+      "column": "outage20x_adapt1_airbag_c2",
+      "agg": "sum",
+      "expected": 7.0,
+      "tol": 1e-06
+    },
+    {
+      "id": "exp89b_adapt1_airbag_disc_c2_es4d",
+      "file": "exp89b_eu_dunkelflaute_oos_trace.csv",
+      "column": "es_adapt1_airbag_disc_chronos2",
+      "agg": "mean",
+      "expected": 0.769808,
+      "tol": 0.0002
+    },
+    {
+      "id": "exp89b_adapt1_airbag_disc_c2_cost20x_meur",
+      "file": "exp89b_eu_dunkelflaute_oos_trace.csv",
+      "column": "cost20x_adapt1_airbag_disc_chronos2",
+      "agg": "mean_x_365_div_1e6",
+      "expected": 991.8725,
+      "tol": 0.05
+    },
+    {
+      "id": "exp89b_adapt1_airbag_disc_c2_outages",
+      "file": "exp89b_eu_dunkelflaute_oos_trace.csv",
+      "column": "outage20x_adapt1_airbag_disc_chronos2",
+      "agg": "sum",
+      "expected": 7.0,
+      "tol": 1e-06
+    },
+    {
+      "id": "exp89b_adapt1_airbag_disc_c2_var95_breaches",
+      "file": "exp89b_eu_dunkelflaute_oos_trace.csv",
+      "column": "var95_br_adapt1_airbag_disc_chronos2",
+      "agg": "sum",
+      "expected": 19.0,
+      "tol": 1e-06
+    }
+  ]
+}

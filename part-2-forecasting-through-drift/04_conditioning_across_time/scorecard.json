@@ -1,0 +1,1612 @@
+{
+  "section": "04_conditioning_across_time",
+  "title": "Section 04 \u2014 Conditioning Across Time",
+  "part": "Part 2: Forecasting Through Drift",
+  "provenance_tier": "raw_public_empirical_telemetry",
+  "api_endpoint": "https://rei-neuroadapt-api.reilabs.org/api/v1",
+  "benchmarks": {
+    "exp16_macro_19y": {
+      "name": "19-Year Weekly 5-Asset Global Macro Cross-Asset Copula (Exp 16)",
+      "data_sources": [
+        "Ken French 49 Industry Portfolios (equal-weight US equity composite)",
+        "FRED (VIXCLS, VXVCLS, DGS10, DCOILWTICO, DTWEXBGS)"
+      ],
+      "date_range_all_weeks": "2008-04-02..2026-09-18",
+      "date_range_eval_890": "2009-01-15..2026-09-18",
+      "n_total_weeks": 930,
+      "n_initial_abstentions": 7,
+      "n_warmup_predicted": 33,
+      "n_eval_weeks": 890,
+      "archive_depth_max_weeks": 1024,
+      "api_config": {
+        "conditioning": "kernel",
+        "numeric_transport": "none",
+        "input_paths": [
+          "values.vix_term"
+        ],
+        "targets": [
+          "values.z_eq",
+          "values.z_y10",
+          "values.z_vix",
+          "values.z_oil",
+          "values.z_usd"
+        ],
+        "required_support": 6,
+        "max_distance": 1.0,
+        "max_branches": 128,
+        "primary_archive_recall_arm": {
+          "max_samples": 1024,
+          "max_support": 512,
+          "bandwidth": 0.2
+        },
+        "best_es_arm": {
+          "max_samples": 512,
+          "max_support": 512,
+          "bandwidth": 0.3
+        }
+      },
+      "headline_metrics": {
+        "w1024_bw020_es_5d_eval890": 2.322632,
+        "w0512_bw030_es_5d_eval890": 2.320846,
+        "dcc_garch_fhs_es_5d_eval890": 2.333647,
+        "w0512_bw030_vs_dcc_fhs_diff": -0.012801,
+        "w0512_bw030_vs_dcc_fhs_t10": -3.7787,
+        "primary_9_configs_count": 9,
+        "primary_9_configs_frtb_3of3_pass": 9,
+        "primary_9_configs_beat_dcc_fhs_numerically": 9,
+        "primary_9_configs_beat_dcc_fhs_significantly_p05": 5
+      },
+      "gfc_2008_analogue_weight_ratios_w1024_bw020": {
+        "calm_2017_full_year": {
+          "n_weeks": 51,
+          "cond_mass_mean": 0.127538,
+          "prior_mass_mean": 0.191178,
+          "weight_ratio": 0.6671
+        },
+        "calm_late_2026_trough_week": {
+          "date": "2026-08-13",
+          "end_date": "2026-08-20",
+          "cond_mass": 0.046376,
+          "prior_mass": 0.097656,
+          "weight_ratio": 0.4749
+        },
+        "stress_feb2018_volmageddon": {
+          "date": "2018-02-06",
+          "end_date": "2018-02-13",
+          "cond_mass": 0.485085,
+          "prior_mass": 0.179435,
+          "weight_ratio": 2.7034
+        },
+        "stress_mar2020_covid_onset": {
+          "date": "2020-03-03",
+          "end_date": "2020-03-10",
+          "cond_mass": 0.346666,
+          "prior_mass": 0.148438,
+          "weight_ratio": 2.3354
+        },
+        "stress_covid_peak_13wk": {
+          "idx_range": "598..610",
+          "date_range": "2020-02-18..2020-05-13",
+          "n_weeks": 13,
+          "cond_mass_mean": 0.239997,
+          "prior_mass_mean": 0.148288,
+          "weight_ratio": 1.6185
+        },
+        "stress_apr2025_tariffs": {
+          "date": "2025-04-04",
+          "end_date": "2025-04-11",
+          "cond_mass": 0.276456,
+          "prior_mass": 0.105469,
+          "weight_ratio": 2.6212
+        }
+      },
+      "frtb_checks_definition": [
+        "VaR99 Christoffersen conditional coverage (p_cc >= 0.05)",
+        "ES99 Acerbi-Szekely Z2 one-sided non-underestimation (p >= 0.05)",
+        "Continuous Equity PIT Kolmogorov-Smirnov uniformity (p_ks >= 0.05)"
+      ],
+      "sweep_arms": [
+        {
+          "model_id": "w0064_bw030_sup0064_kern",
+          "family": "Adapt-1",
+          "window_w": 64,
+          "bandwidth": 0.3,
+          "max_support": 64,
+          "conditioning": "kernel",
+          "in_primary_9_sweep": false,
+          "es_5d_full19y": 2.352004,
+          "diff_vs_dcc_fhs": 0.018357,
+          "t10_vs_dcc_fhs": 2.0975,
+          "sig_beat_dcc_fhs_05": false,
+          "var99_breaches": 14,
+          "var99_p_cc": 0.130728,
+          "es99_z2": -1.303749,
+          "es99_p_underest": 0.028857,
+          "pit_ks_p": 0.87237,
+          "frtb_3of3_pass": false,
+          "gfc_covid_peak_ratio": null
+        },
+        {
+          "model_id": "w0064_bw100_sup0064_kern",
+          "family": "Adapt-1",
+          "window_w": 64,
+          "bandwidth": 1.0,
+          "max_support": 64,
+          "conditioning": "kernel",
+          "in_primary_9_sweep": false,
+          "es_5d_full19y": 2.355853,
+          "diff_vs_dcc_fhs": 0.022205,
+          "t10_vs_dcc_fhs": 3.2882,
+          "sig_beat_dcc_fhs_05": false,
+          "var99_breaches": 13,
+          "var99_p_cc": 0.175832,
+          "es99_z2": -1.122357,
+          "es99_p_underest": 0.044412,
+          "pit_ks_p": 0.923635,
+          "frtb_3of3_pass": true,
+          "gfc_covid_peak_ratio": null
+        },
+        {
+          "model_id": "w0128_bw030_sup0128_kern",
+          "family": "Adapt-1",
+          "window_w": 128,
+          "bandwidth": 0.3,
+          "max_support": 128,
+          "conditioning": "kernel",
+          "in_primary_9_sweep": true,
+          "es_5d_full19y": 2.331457,
+          "diff_vs_dcc_fhs": -0.00219,
+          "t10_vs_dcc_fhs": -0.402,
+          "sig_beat_dcc_fhs_05": false,
+          "var99_breaches": 11,
+          "var99_p_cc": 0.690316,
+          "es99_z2": -0.4254,
+          "es99_p_underest": 0.171669,
+          "pit_ks_p": 0.960237,
+          "frtb_3of3_pass": true,
+          "gfc_covid_peak_ratio": null
+        },
+        {
+          "model_id": "w0256_bw030_sup0256_kern",
+          "family": "Adapt-1",
+          "window_w": 256,
+          "bandwidth": 0.3,
+          "max_support": 256,
+          "conditioning": "kernel",
+          "in_primary_9_sweep": true,
+          "es_5d_full19y": 2.322503,
+          "diff_vs_dcc_fhs": -0.011144,
+          "t10_vs_dcc_fhs": -2.7908,
+          "sig_beat_dcc_fhs_05": true,
+          "var99_breaches": 11,
+          "var99_p_cc": 0.690316,
+          "es99_z2": -0.317543,
+          "es99_p_underest": 0.225086,
+          "pit_ks_p": 0.929859,
+          "frtb_3of3_pass": true,
+          "gfc_covid_peak_ratio": null
+        },
+        {
+          "model_id": "w0512_bw030_sup0512_kern",
+          "family": "Adapt-1",
+          "window_w": 512,
+          "bandwidth": 0.3,
+          "max_support": 512,
+          "conditioning": "kernel",
+          "in_primary_9_sweep": true,
+          "es_5d_full19y": 2.320846,
+          "diff_vs_dcc_fhs": -0.012801,
+          "t10_vs_dcc_fhs": -3.7787,
+          "sig_beat_dcc_fhs_05": true,
+          "var99_breaches": 13,
+          "var99_p_cc": 0.357665,
+          "es99_z2": -0.441276,
+          "es99_p_underest": 0.145863,
+          "pit_ks_p": 0.654102,
+          "frtb_3of3_pass": true,
+          "gfc_covid_peak_ratio": 0.8998
+        },
+        {
+          "model_id": "w1024_bw010_sup0512_kern",
+          "family": "Adapt-1",
+          "window_w": 1024,
+          "bandwidth": 0.1,
+          "max_support": 512,
+          "conditioning": "kernel",
+          "in_primary_9_sweep": false,
+          "es_5d_full19y": 2.327178,
+          "diff_vs_dcc_fhs": -0.006469,
+          "t10_vs_dcc_fhs": -0.7779,
+          "sig_beat_dcc_fhs_05": false,
+          "var99_breaches": 15,
+          "var99_p_cc": 0.134177,
+          "es99_z2": -0.870928,
+          "es99_p_underest": 0.037768,
+          "pit_ks_p": 0.466568,
+          "frtb_3of3_pass": false,
+          "gfc_covid_peak_ratio": 2.2063
+        },
+        {
+          "model_id": "w1024_bw020_sup0512_kern",
+          "family": "Adapt-1",
+          "window_w": 1024,
+          "bandwidth": 0.2,
+          "max_support": 512,
+          "conditioning": "kernel",
+          "in_primary_9_sweep": true,
+          "es_5d_full19y": 2.322632,
+          "diff_vs_dcc_fhs": -0.011015,
+          "t10_vs_dcc_fhs": -2.6363,
+          "sig_beat_dcc_fhs_05": true,
+          "var99_breaches": 12,
+          "var99_p_cc": 0.518962,
+          "es99_z2": -0.404573,
+          "es99_p_underest": 0.165005,
+          "pit_ks_p": 0.546188,
+          "frtb_3of3_pass": true,
+          "gfc_covid_peak_ratio": 1.6185
+        },
+        {
+          "model_id": "w1024_bw030_sup0512_kern",
+          "family": "Adapt-1",
+          "window_w": 1024,
+          "bandwidth": 0.3,
+          "max_support": 512,
+          "conditioning": "kernel",
+          "in_primary_9_sweep": true,
+          "es_5d_full19y": 2.325024,
+          "diff_vs_dcc_fhs": -0.008623,
+          "t10_vs_dcc_fhs": -2.422,
+          "sig_beat_dcc_fhs_05": true,
+          "var99_breaches": 13,
+          "var99_p_cc": 0.357665,
+          "es99_z2": -0.440927,
+          "es99_p_underest": 0.147299,
+          "pit_ks_p": 0.5055,
+          "frtb_3of3_pass": true,
+          "gfc_covid_peak_ratio": 1.3128
+        },
+        {
+          "model_id": "w1024_bw030_sup1024_kern",
+          "family": "Adapt-1",
+          "window_w": 1024,
+          "bandwidth": 0.3,
+          "max_support": 1024,
+          "conditioning": "kernel",
+          "in_primary_9_sweep": true,
+          "es_5d_full19y": 2.322603,
+          "diff_vs_dcc_fhs": -0.011044,
+          "t10_vs_dcc_fhs": -3.1038,
+          "sig_beat_dcc_fhs_05": true,
+          "var99_breaches": 12,
+          "var99_p_cc": 0.518962,
+          "es99_z2": -0.363756,
+          "es99_p_underest": 0.183828,
+          "pit_ks_p": 0.413441,
+          "frtb_3of3_pass": true,
+          "gfc_covid_peak_ratio": 1.297
+        },
+        {
+          "model_id": "w1024_bw030_sup0512_adap",
+          "family": "Adapt-1",
+          "window_w": 1024,
+          "bandwidth": 0.3,
+          "max_support": 512,
+          "conditioning": "adaptive",
+          "in_primary_9_sweep": true,
+          "es_5d_full19y": 2.33069,
+          "diff_vs_dcc_fhs": -0.002957,
+          "t10_vs_dcc_fhs": -0.875,
+          "sig_beat_dcc_fhs_05": false,
+          "var99_breaches": 12,
+          "var99_p_cc": 0.518962,
+          "es99_z2": -0.302084,
+          "es99_p_underest": 0.225681,
+          "pit_ks_p": 0.336988,
+          "frtb_3of3_pass": true,
+          "gfc_covid_peak_ratio": 1.0842
+        },
+        {
+          "model_id": "w1024_bw050_sup0512_kern",
+          "family": "Adapt-1",
+          "window_w": 1024,
+          "bandwidth": 0.5,
+          "max_support": 512,
+          "conditioning": "kernel",
+          "in_primary_9_sweep": true,
+          "es_5d_full19y": 2.328783,
+          "diff_vs_dcc_fhs": -0.004864,
+          "t10_vs_dcc_fhs": -1.4256,
+          "sig_beat_dcc_fhs_05": false,
+          "var99_breaches": 12,
+          "var99_p_cc": 0.518962,
+          "es99_z2": -0.314804,
+          "es99_p_underest": 0.217758,
+          "pit_ks_p": 0.449133,
+          "frtb_3of3_pass": true,
+          "gfc_covid_peak_ratio": 1.1155
+        },
+        {
+          "model_id": "w1024_bw100_sup0512_kern",
+          "family": "Adapt-1",
+          "window_w": 1024,
+          "bandwidth": 1.0,
+          "max_support": 512,
+          "conditioning": "kernel",
+          "in_primary_9_sweep": true,
+          "es_5d_full19y": 2.331564,
+          "diff_vs_dcc_fhs": -0.002083,
+          "t10_vs_dcc_fhs": -0.6173,
+          "sig_beat_dcc_fhs_05": false,
+          "var99_breaches": 12,
+          "var99_p_cc": 0.518962,
+          "es99_z2": -0.298337,
+          "es99_p_underest": 0.227877,
+          "pit_ks_p": 0.338897,
+          "frtb_3of3_pass": true,
+          "gfc_covid_peak_ratio": 1.0288
+        }
+      ],
+      "parametric_and_fhs_comparators": [
+        {
+          "model_id": "DCC-GARCH(1,1)-FHS",
+          "family": "GARCH-FHS",
+          "es_5d_full19y": 2.333647,
+          "var99_breaches": 9,
+          "var99_p_cc": 0.911547,
+          "es99_z2": -0.106801,
+          "es99_p_underest": 0.391125,
+          "pit_ks_p": 0.862642,
+          "frtb_3of3_pass": true
+        },
+        {
+          "model_id": "DCC-GARCH(1,1)-Gauss",
+          "family": "GARCH-Gauss",
+          "es_5d_full19y": 2.350368,
+          "var99_breaches": 12,
+          "var99_p_cc": 0.518962,
+          "es99_z2": -0.683193,
+          "es99_p_underest": 0.085907,
+          "pit_ks_p": 0.000237,
+          "frtb_3of3_pass": false
+        },
+        {
+          "model_id": "RiskMetrics EWMA-FHS (lam=0.88)",
+          "family": "EWMA-FHS",
+          "es_5d_full19y": null,
+          "var99_breaches": 12,
+          "var99_p_cc": 0.518962,
+          "es99_z2": -0.424549,
+          "es99_p_underest": 0.160301,
+          "pit_ks_p": 0.832099,
+          "frtb_3of3_pass": true
+        },
+        {
+          "model_id": "RiskMetrics EWMA-Gauss (lam=0.88)",
+          "family": "EWMA-Gauss",
+          "es_5d_full19y": null,
+          "var99_breaches": 22,
+          "var99_p_cc": 0.000572,
+          "es99_z2": -2.179458,
+          "es99_p_underest": 0.000719,
+          "pit_ks_p": 0.006263,
+          "frtb_3of3_pass": false
+        }
+      ],
+      "bandwidth_bw010_ablation": {
+        "arm": "w1024_bw010_sup0512_kern",
+        "es99_z2": -0.8709,
+        "es99_p_underest": 0.0378,
+        "frtb_3of3_pass": false,
+        "note": "Too-tight bandwidth (bw=0.10) starves tail support and fails 99% ES calibration; maintain bw >= 0.20 and W >= 128."
+      }
+    },
+    "municipal_311_revisions": {
+      "total_predicted_checkpoints": 11326,
+      "city_checkpoint_breakdown": {
+        "nyc_lower_manhattan": 4330,
+        "chicago_post_2026_09": 2621,
+        "sf_post_2026_09": 4375
+      },
+      "nyc_lower_manhattan": {
+        "experiment_id": "exp26_mixed_events",
+        "provenance_note": "NYC Lower Manhattan progressive revision benchmark (ZIP 10006 dispatch queue, 2025-11-12..2026-11-12; 4,330 predicted checkpoints plus 10 initial warmup abstentions). Distinct from the separate 4-borough asynchronous-mask benchmark (Exp 31).",
+        "data_source": "NYC Open Data 311 Service Requests Socrata API (data.cityofnewyork.us/resource/erm2-nwe9.json)",
+        "cadence": [
+          "0h",
+          "+1h",
+          "+6h"
+        ],
+        "sla_horizon_hr": 168,
+        "api_config": {
+          "conditioning": "kernel",
+          "numeric_transport": "none",
+          "bandwidth": 0.16,
+          "max_samples": 512,
+          "max_support": 512,
+          "max_branches": 128,
+          "max_distance": 1.0,
+          "required_support": 6,
+          "max_pending_forecasts": 512,
+          "shared_future_id": true
+        },
+        "n_predicted_all": 4330,
+        "n_predicted_oos_2026": 3873,
+        "identical_ticket_3stage_trajectory_oos": {
+          "n_tickets": 826,
+          "es_mixed_by_stage": {
+            "rev_0": 0.618733,
+            "rev_1": 0.553428,
+            "rev_2": 0.530845
+          },
+          "rev2_minus_rev0_es_diff": -0.087888,
+          "rev2_minus_rev0_t10": -9.196,
+          "monotonic_decrease": true
+        },
+        "stage_overrun_calibration_oos": {
+          "rev_0": {
+            "stage": "0h",
+            "n": 1947,
+            "es_mixed": 0.442393,
+            "pred_overrun_7d_pct": 16.65,
+            "actual_overrun_7d_pct": 17.15,
+            "calibration_gap_pp": -0.51
+          },
+          "rev_1": {
+            "stage": "+1h",
+            "n": 1100,
+            "es_mixed": 0.553622,
+            "pred_overrun_7d_pct": 30.27,
+            "actual_overrun_7d_pct": 30.36,
+            "calibration_gap_pp": -0.1
+          },
+          "rev_2": {
+            "stage": "+6h",
+            "n": 826,
+            "es_mixed": 0.530845,
+            "pred_overrun_7d_pct": 40.72,
+            "actual_overrun_7d_pct": 40.44,
+            "calibration_gap_pp": 0.28
+          }
+        },
+        "comparators_oos_es_mixed": {
+          "rev_0_n1947": {
+            "Adapt1_Live": 0.44239,
+            "Online_Logit_HeteroRidge": 0.44833,
+            "Online_Logit_Ridge": 0.49753,
+            "HGBR_Clf_Reg": 0.52392,
+            "TimesFM3_CovExog_Indep": 0.50293,
+            "Chronos2_CovExog_Indep": 0.5326,
+            "Uncond_Prior": 0.82295
+          },
+          "rev_1_n1100": {
+            "Adapt1_Live": 0.55362,
+            "Online_Logit_HeteroRidge": 0.55582,
+            "Online_Logit_Ridge": 0.57766,
+            "HGBR_Clf_Reg": 0.6075,
+            "Uncond_Survival_Prior": 0.73948,
+            "Uncond_Prior": 0.93055
+          },
+          "rev_2_n826": {
+            "Adapt1_Live": 0.53085,
+            "Online_Logit_HeteroRidge": 0.54908,
+            "Online_Logit_Ridge": 0.5496,
+            "HGBR_Clf_Reg": 0.58099,
+            "Uncond_Survival_Prior": 0.60355,
+            "Uncond_Prior": 1.01165
+          }
+        }
+      },
+      "chicago_post_2026_09": {
+        "experiment_id": "exp53_multicity311_chicago",
+        "data_source": "Chicago Data Portal 311 Service Requests Socrata API (data.cityofchicago.org/resource/v6vf-nfxy.json)",
+        "cadence": [
+          "0h",
+          "+6h",
+          "+48h"
+        ],
+        "sla_horizon_hr": 168,
+        "api_config": {
+          "conditioning": "kernel",
+          "numeric_transport": "none",
+          "bandwidth": 0.16,
+          "max_samples": 1024,
+          "max_support": 1024,
+          "max_branches": 128,
+          "max_distance": 1.0,
+          "required_support": 6,
+          "max_pending_forecasts": 1024,
+          "shared_future_id": true
+        },
+        "n_predicted": 2621,
+        "stages": {
+          "rev_0": {
+            "n": 1106,
+            "actual_overrun_7d_pct": 46.11,
+            "adapt1_rank_es": "#1/7",
+            "models": {
+              "Own_PriorCF": {
+                "es_mixed": 0.69874,
+                "disp_brier": 0.55118,
+                "brier_overrun": 0.25017,
+                "ece_overrun": 0.04608,
+                "crps_dur": 0.50215,
+                "cov90_dur": 0.92495,
+                "pred_overrun_7d_pct": 50.72,
+                "triage_cost_r5": 1.0
+              },
+              "Survival_PriorCF": {
+                "es_mixed": 0.69874,
+                "disp_brier": 0.55118,
+                "brier_overrun": 0.25017,
+                "ece_overrun": 0.04608,
+                "crps_dur": 0.50215,
+                "cov90_dur": 0.92495,
+                "pred_overrun_7d_pct": 50.72,
+                "triage_cost_r5": 1.0
+              },
+              "OLHR": {
+                "es_mixed": 0.58177,
+                "disp_brier": 0.47603,
+                "brier_overrun": 0.21112,
+                "ece_overrun": 0.05108,
+                "crps_dur": 0.39202,
+                "cov90_dur": 0.87794,
+                "pred_overrun_7d_pct": 47.26,
+                "triage_cost_r5": 1.00452
+              },
+              "HGBR": {
+                "es_mixed": 0.59199,
+                "disp_brier": 0.47443,
+                "brier_overrun": 0.20999,
+                "ece_overrun": 0.06058,
+                "crps_dur": 0.40674,
+                "cov90_dur": 0.88879,
+                "pred_overrun_7d_pct": 49.23,
+                "triage_cost_r5": 0.95298
+              },
+              "QRF": {
+                "es_mixed": 0.49978,
+                "disp_brier": 0.46129,
+                "brier_overrun": 0.20423,
+                "ece_overrun": 0.04775,
+                "crps_dur": 0.31216,
+                "cov90_dur": 0.92948,
+                "pred_overrun_7d_pct": 48.62,
+                "triage_cost_r5": 0.94033
+              },
+              "Adapt1_LivePROD": {
+                "es_mixed": 0.47155,
+                "disp_brier": 0.44913,
+                "brier_overrun": 0.1938,
+                "ece_overrun": 0.05225,
+                "crps_dur": 0.28173,
+                "cov90_dur": 0.90416,
+                "pred_overrun_7d_pct": 48.31,
+                "triage_cost_r5": 0.90868
+              }
+            },
+            "paired_vs_adapt1_es": {
+              "Own_PriorCF": {
+                "diff": -0.22719,
+                "pct_reduction_vs_peer": 32.52,
+                "t_hac": -8.499,
+                "p_hac_holm": 0.0,
+                "p_hac_raw": 1.909e-17
+              },
+              "Survival_PriorCF": {
+                "diff": -0.22719,
+                "pct_reduction_vs_peer": 32.52,
+                "t_hac": -8.499,
+                "p_hac_holm": 0.0,
+                "p_hac_raw": 1.909e-17
+              },
+              "OLHR": {
+                "diff": -0.11023,
+                "pct_reduction_vs_peer": 18.95,
+                "t_hac": -6.516,
+                "p_hac_holm": 0.0,
+                "p_hac_raw": 7.2407e-11
+              },
+              "HGBR": {
+                "diff": -0.12044,
+                "pct_reduction_vs_peer": 20.34,
+                "t_hac": -6.275,
+                "p_hac_holm": 0.0,
+                "p_hac_raw": 3.4882e-10
+              },
+              "QRF": {
+                "diff": -0.02823,
+                "pct_reduction_vs_peer": 5.65,
+                "t_hac": -2.939,
+                "p_hac_holm": 0.003296,
+                "p_hac_raw": 0.003296
+              }
+            }
+          },
+          "rev_1": {
+            "n": 855,
+            "actual_overrun_7d_pct": 59.65,
+            "adapt1_rank_es": "#1/7",
+            "models": {
+              "Own_PriorCF": {
+                "es_mixed": 0.48594,
+                "disp_brier": 0.53062,
+                "brier_overrun": 0.24866,
+                "ece_overrun": 0.08914,
+                "crps_dur": 0.24484,
+                "cov90_dur": 1.0,
+                "pred_overrun_7d_pct": 50.73,
+                "triage_cost_r5": 1.0
+              },
+              "Survival_PriorCF": {
+                "es_mixed": 0.44299,
+                "disp_brier": 0.51673,
+                "brier_overrun": 0.2417,
+                "ece_overrun": 0.03124,
+                "crps_dur": 0.19977,
+                "cov90_dur": 0.94035,
+                "pred_overrun_7d_pct": 61.34,
+                "triage_cost_r5": 1.0
+              },
+              "OLHR": {
+                "es_mixed": 0.41903,
+                "disp_brier": 0.48489,
+                "brier_overrun": 0.22241,
+                "ece_overrun": 0.0644,
+                "crps_dur": 0.20368,
+                "cov90_dur": 0.86199,
+                "pred_overrun_7d_pct": 58.74,
+                "triage_cost_r5": 1.04912
+              },
+              "HGBR": {
+                "es_mixed": 0.41039,
+                "disp_brier": 0.47347,
+                "brier_overrun": 0.21593,
+                "ece_overrun": 0.0446,
+                "crps_dur": 0.19872,
+                "cov90_dur": 0.85263,
+                "pred_overrun_7d_pct": 59.95,
+                "triage_cost_r5": 0.99415
+              },
+              "QRF": {
+                "es_mixed": 0.40534,
+                "disp_brier": 0.47641,
+                "brier_overrun": 0.21794,
+                "ece_overrun": 0.07665,
+                "crps_dur": 0.17971,
+                "cov90_dur": 0.93684,
+                "pred_overrun_7d_pct": 60.24,
+                "triage_cost_r5": 1.0
+              },
+              "Adapt1_LivePROD": {
+                "es_mixed": 0.40082,
+                "disp_brier": 0.46304,
+                "brier_overrun": 0.20906,
+                "ece_overrun": 0.04729,
+                "crps_dur": 0.17756,
+                "cov90_dur": 0.93684,
+                "pred_overrun_7d_pct": 61.17,
+                "triage_cost_r5": 0.99415
+              }
+            },
+            "paired_vs_adapt1_es": {
+              "Own_PriorCF": {
+                "diff": -0.08512,
+                "pct_reduction_vs_peer": 17.52,
+                "t_hac": -8.877,
+                "p_hac_holm": 0.0,
+                "p_hac_raw": 6.847e-19
+              },
+              "Survival_PriorCF": {
+                "diff": -0.04217,
+                "pct_reduction_vs_peer": 9.52,
+                "t_hac": -4.932,
+                "p_hac_holm": 4e-06,
+                "p_hac_raw": 8.1313e-07
+              },
+              "OLHR": {
+                "diff": -0.01821,
+                "pct_reduction_vs_peer": 4.35,
+                "t_hac": -2.039,
+                "p_hac_holm": 0.124482,
+                "p_hac_raw": 0.041494
+              },
+              "HGBR": {
+                "diff": -0.00958,
+                "pct_reduction_vs_peer": 2.33,
+                "t_hac": -1.31,
+                "p_hac_holm": 0.380247,
+                "p_hac_raw": 0.19012
+              },
+              "QRF": {
+                "diff": -0.00452,
+                "pct_reduction_vs_peer": 1.12,
+                "t_hac": -0.643,
+                "p_hac_holm": 0.519915,
+                "p_hac_raw": 0.51992
+              }
+            }
+          },
+          "rev_2": {
+            "n": 660,
+            "actual_overrun_7d_pct": 77.27,
+            "adapt1_rank_es": "#1/7",
+            "models": {
+              "Own_PriorCF": {
+                "es_mixed": 0.42626,
+                "disp_brier": 0.49984,
+                "brier_overrun": 0.24801,
+                "ece_overrun": 0.26681,
+                "crps_dur": 0.18774,
+                "cov90_dur": 1.0,
+                "pred_overrun_7d_pct": 50.59,
+                "triage_cost_r5": 1.0
+              },
+              "Survival_PriorCF": {
+                "es_mixed": 0.2688,
+                "disp_brier": 0.365,
+                "brier_overrun": 0.17634,
+                "ece_overrun": 0.004,
+                "crps_dur": 0.05467,
+                "cov90_dur": 0.94848,
+                "pred_overrun_7d_pct": 76.87,
+                "triage_cost_r5": 1.0
+              },
+              "OLHR": {
+                "es_mixed": 0.26126,
+                "disp_brier": 0.35359,
+                "brier_overrun": 0.17044,
+                "ece_overrun": 0.03341,
+                "crps_dur": 0.05961,
+                "cov90_dur": 0.87576,
+                "pred_overrun_7d_pct": 75.57,
+                "triage_cost_r5": 1.02424
+              },
+              "HGBR": {
+                "es_mixed": 0.26421,
+                "disp_brier": 0.35832,
+                "brier_overrun": 0.17202,
+                "ece_overrun": 0.08848,
+                "crps_dur": 0.05996,
+                "cov90_dur": 0.87576,
+                "pred_overrun_7d_pct": 76.7,
+                "triage_cost_r5": 1.0
+              },
+              "QRF": {
+                "es_mixed": 0.26277,
+                "disp_brier": 0.3549,
+                "brier_overrun": 0.17219,
+                "ece_overrun": 0.04443,
+                "crps_dur": 0.05415,
+                "cov90_dur": 0.93788,
+                "pred_overrun_7d_pct": 75.88,
+                "triage_cost_r5": 1.0
+              },
+              "Adapt1_LivePROD": {
+                "es_mixed": 0.25793,
+                "disp_brier": 0.34763,
+                "brier_overrun": 0.16816,
+                "ece_overrun": 0.03734,
+                "crps_dur": 0.05405,
+                "cov90_dur": 0.97424,
+                "pred_overrun_7d_pct": 75.55,
+                "triage_cost_r5": 1.0
+              }
+            },
+            "paired_vs_adapt1_es": {
+              "Own_PriorCF": {
+                "diff": -0.16834,
+                "pct_reduction_vs_peer": 39.49,
+                "t_hac": -15.414,
+                "p_hac_holm": 0.0,
+                "p_hac_raw": 1.3101e-53
+              },
+              "Survival_PriorCF": {
+                "diff": -0.01088,
+                "pct_reduction_vs_peer": 4.05,
+                "t_hac": -1.875,
+                "p_hac_holm": 0.242957,
+                "p_hac_raw": 0.060739
+              },
+              "OLHR": {
+                "diff": -0.00333,
+                "pct_reduction_vs_peer": 1.28,
+                "t_hac": -0.491,
+                "p_hac_holm": 0.623267,
+                "p_hac_raw": 0.62327
+              },
+              "HGBR": {
+                "diff": -0.00629,
+                "pct_reduction_vs_peer": 2.38,
+                "t_hac": -1.283,
+                "p_hac_holm": 0.597998,
+                "p_hac_raw": 0.19933
+              },
+              "QRF": {
+                "diff": -0.00484,
+                "pct_reduction_vs_peer": 1.84,
+                "t_hac": -1.117,
+                "p_hac_holm": 0.597998,
+                "p_hac_raw": 0.26391
+              }
+            }
+          }
+        },
+        "frozen_and_onepass_comparators_es": {
+          "Frozen_QRF_Mixed": {
+            "rev_0": 0.55182,
+            "rev_1": 0.41217,
+            "rev_2": 0.25295
+          },
+          "Frozen_HGBR_Mixed": {
+            "rev_0": 0.55803,
+            "rev_1": 0.42033,
+            "rev_2": 0.26572
+          },
+          "Frozen_Logit_Ridge_Mixed": {
+            "rev_0": 0.58322,
+            "rev_1": 0.41566,
+            "rev_2": 0.25525
+          },
+          "Online_FTRL_Logit_RLS_Mixed": {
+            "rev_0": 0.56486,
+            "rev_1": 0.41761,
+            "rev_2": 0.25804
+          },
+          "Online_SGD_Mixed_Survival": {
+            "rev_0": 0.59907,
+            "rev_1": 0.41437,
+            "rev_2": 0.25284
+          }
+        }
+      },
+      "sf_post_2026_09": {
+        "experiment_id": "exp53_multicity311_sf",
+        "data_source": "DataSF 311 Cases Socrata API (data.sfgov.org/resource/vw6y-z8j6.json)",
+        "cadence": [
+          "0h",
+          "+1h",
+          "+6h"
+        ],
+        "sla_horizon_hr": 168,
+        "api_config": {
+          "conditioning": "kernel",
+          "numeric_transport": "none",
+          "bandwidth": 0.16,
+          "max_samples": 1024,
+          "max_support": 1024,
+          "max_branches": 128,
+          "max_distance": 1.0,
+          "required_support": 6,
+          "max_pending_forecasts": 1024,
+          "shared_future_id": true
+        },
+        "n_predicted": 4375,
+        "stages": {
+          "rev_0": {
+            "n": 1722,
+            "actual_overrun_7d_pct": 16.78,
+            "adapt1_rank_es": "#2/7",
+            "models": {
+              "Own_PriorCF": {
+                "es_mixed": 0.76842,
+                "disp_brier": 0.74068,
+                "brier_overrun": 0.13969,
+                "ece_overrun": 0.0066,
+                "crps_dur": 0.46897,
+                "cov90_dur": 0.94483,
+                "pred_overrun_7d_pct": 17.44,
+                "triage_cost_r5": 0.8583
+              },
+              "Survival_PriorCF": {
+                "es_mixed": 0.76842,
+                "disp_brier": 0.74068,
+                "brier_overrun": 0.13969,
+                "ece_overrun": 0.0066,
+                "crps_dur": 0.46897,
+                "cov90_dur": 0.94483,
+                "pred_overrun_7d_pct": 17.44,
+                "triage_cost_r5": 0.8583
+              },
+              "HGBR": {
+                "es_mixed": 0.66045,
+                "disp_brier": 0.62549,
+                "brier_overrun": 0.10618,
+                "ece_overrun": 0.03019,
+                "crps_dur": 0.39496,
+                "cov90_dur": 0.89257,
+                "pred_overrun_7d_pct": 16.26,
+                "triage_cost_r5": 0.51684
+              },
+              "QRF": {
+                "es_mixed": 0.63605,
+                "disp_brier": 0.62437,
+                "brier_overrun": 0.10814,
+                "ece_overrun": 0.03766,
+                "crps_dur": 0.3611,
+                "cov90_dur": 0.93496,
+                "pred_overrun_7d_pct": 16.4,
+                "triage_cost_r5": 0.51336
+              },
+              "OLHR": {
+                "es_mixed": 0.6568,
+                "disp_brier": 0.62931,
+                "brier_overrun": 0.10942,
+                "ece_overrun": 0.03428,
+                "crps_dur": 0.38729,
+                "cov90_dur": 0.87108,
+                "pred_overrun_7d_pct": 14.47,
+                "triage_cost_r5": 0.52149
+              },
+              "Adapt1_LivePROD": {
+                "es_mixed": 0.64593,
+                "disp_brier": 0.62049,
+                "brier_overrun": 0.10839,
+                "ece_overrun": 0.03403,
+                "crps_dur": 0.37319,
+                "cov90_dur": 0.87282,
+                "pred_overrun_7d_pct": 14.1,
+                "triage_cost_r5": 0.50871
+              }
+            },
+            "paired_vs_adapt1_es": {
+              "Own_PriorCF": {
+                "diff": -0.12249,
+                "pct_reduction_vs_peer": 15.94,
+                "t_hac": -12.519,
+                "p_hac_holm": 0.0,
+                "p_hac_raw": 5.8633e-36
+              },
+              "Survival_PriorCF": {
+                "diff": -0.12249,
+                "pct_reduction_vs_peer": 15.94,
+                "t_hac": -12.519,
+                "p_hac_holm": 0.0,
+                "p_hac_raw": 5.8633e-36
+              },
+              "OLHR": {
+                "diff": -0.01087,
+                "pct_reduction_vs_peer": 1.66,
+                "t_hac": -1.964,
+                "p_hac_holm": 0.099014,
+                "p_hac_raw": 0.049507
+              },
+              "HGBR": {
+                "diff": -0.01452,
+                "pct_reduction_vs_peer": 2.2,
+                "t_hac": -2.574,
+                "p_hac_holm": 0.040246,
+                "p_hac_raw": 0.010062
+              },
+              "QRF": {
+                "diff": 0.00988,
+                "pct_reduction_vs_peer": -1.55,
+                "t_hac": 1.879,
+                "p_hac_holm": 0.099014,
+                "p_hac_raw": 0.06018
+              }
+            }
+          },
+          "rev_1": {
+            "n": 1545,
+            "actual_overrun_7d_pct": 18.71,
+            "adapt1_rank_es": "#1/7",
+            "models": {
+              "Own_PriorCF": {
+                "es_mixed": 0.74362,
+                "disp_brier": 0.74852,
+                "brier_overrun": 0.15242,
+                "ece_overrun": 0.01905,
+                "crps_dur": 0.43315,
+                "cov90_dur": 1.0,
+                "pred_overrun_7d_pct": 17.5,
+                "triage_cost_r5": 0.94822
+              },
+              "Survival_PriorCF": {
+                "es_mixed": 0.73586,
+                "disp_brier": 0.74479,
+                "brier_overrun": 0.15231,
+                "ece_overrun": 0.00555,
+                "crps_dur": 0.42396,
+                "cov90_dur": 0.95469,
+                "pred_overrun_7d_pct": 19.26,
+                "triage_cost_r5": 0.91133
+              },
+              "HGBR": {
+                "es_mixed": 0.6508,
+                "disp_brier": 0.65398,
+                "brier_overrun": 0.11903,
+                "ece_overrun": 0.03133,
+                "crps_dur": 0.36589,
+                "cov90_dur": 0.89644,
+                "pred_overrun_7d_pct": 18.22,
+                "triage_cost_r5": 0.60388
+              },
+              "QRF": {
+                "es_mixed": 0.63426,
+                "disp_brier": 0.65191,
+                "brier_overrun": 0.1212,
+                "ece_overrun": 0.03748,
+                "crps_dur": 0.34045,
+                "cov90_dur": 0.9288,
+                "pred_overrun_7d_pct": 18.43,
+                "triage_cost_r5": 0.59223
+              },
+              "OLHR": {
+                "es_mixed": 0.64742,
+                "disp_brier": 0.6529,
+                "brier_overrun": 0.12162,
+                "ece_overrun": 0.03745,
+                "crps_dur": 0.36202,
+                "cov90_dur": 0.8589,
+                "pred_overrun_7d_pct": 15.96,
+                "triage_cost_r5": 0.57864
+              },
+              "Adapt1_LivePROD": {
+                "es_mixed": 0.62979,
+                "disp_brier": 0.63709,
+                "brier_overrun": 0.11897,
+                "ece_overrun": 0.04153,
+                "crps_dur": 0.34551,
+                "cov90_dur": 0.93333,
+                "pred_overrun_7d_pct": 15.9,
+                "triage_cost_r5": 0.55469
+              }
+            },
+            "paired_vs_adapt1_es": {
+              "Own_PriorCF": {
+                "diff": -0.11383,
+                "pct_reduction_vs_peer": 15.31,
+                "t_hac": -13.302,
+                "p_hac_holm": 0.0,
+                "p_hac_raw": 2.2549e-40
+              },
+              "Survival_PriorCF": {
+                "diff": -0.10607,
+                "pct_reduction_vs_peer": 14.41,
+                "t_hac": -12.659,
+                "p_hac_holm": 0.0,
+                "p_hac_raw": 9.9884e-37
+              },
+              "OLHR": {
+                "diff": -0.01763,
+                "pct_reduction_vs_peer": 2.72,
+                "t_hac": -3.569,
+                "p_hac_holm": 0.001075,
+                "p_hac_raw": 0.00035818
+              },
+              "HGBR": {
+                "diff": -0.02101,
+                "pct_reduction_vs_peer": 3.23,
+                "t_hac": -4.583,
+                "p_hac_holm": 1.8e-05,
+                "p_hac_raw": 4.5777e-06
+              },
+              "QRF": {
+                "diff": -0.00447,
+                "pct_reduction_vs_peer": 0.7,
+                "t_hac": -1.025,
+                "p_hac_holm": 0.305485,
+                "p_hac_raw": 0.30549
+              }
+            }
+          },
+          "rev_2": {
+            "n": 1108,
+            "actual_overrun_7d_pct": 26.08,
+            "adapt1_rank_es": "#1/7",
+            "models": {
+              "Own_PriorCF": {
+                "es_mixed": 0.73743,
+                "disp_brier": 0.76431,
+                "brier_overrun": 0.20001,
+                "ece_overrun": 0.08621,
+                "crps_dur": 0.42014,
+                "cov90_dur": 1.0,
+                "pred_overrun_7d_pct": 17.46,
+                "triage_cost_r5": 1.26444
+              },
+              "Survival_PriorCF": {
+                "es_mixed": 0.64511,
+                "disp_brier": 0.74726,
+                "brier_overrun": 0.19307,
+                "ece_overrun": 0.01618,
+                "crps_dur": 0.29385,
+                "cov90_dur": 0.95036,
+                "pred_overrun_7d_pct": 27.7,
+                "triage_cost_r5": 1.0
+              },
+              "HGBR": {
+                "es_mixed": 0.57273,
+                "disp_brier": 0.65697,
+                "brier_overrun": 0.15479,
+                "ece_overrun": 0.04454,
+                "crps_dur": 0.25987,
+                "cov90_dur": 0.87274,
+                "pred_overrun_7d_pct": 25.49,
+                "triage_cost_r5": 0.77978
+              },
+              "QRF": {
+                "es_mixed": 0.56474,
+                "disp_brier": 0.65635,
+                "brier_overrun": 0.15701,
+                "ece_overrun": 0.04798,
+                "crps_dur": 0.24348,
+                "cov90_dur": 0.93953,
+                "pred_overrun_7d_pct": 26.57,
+                "triage_cost_r5": 0.79783
+              },
+              "OLHR": {
+                "es_mixed": 0.57314,
+                "disp_brier": 0.65452,
+                "brier_overrun": 0.15705,
+                "ece_overrun": 0.03859,
+                "crps_dur": 0.26125,
+                "cov90_dur": 0.82942,
+                "pred_overrun_7d_pct": 23.12,
+                "triage_cost_r5": 0.77256
+              },
+              "Adapt1_LivePROD": {
+                "es_mixed": 0.56015,
+                "disp_brier": 0.6363,
+                "brier_overrun": 0.15345,
+                "ece_overrun": 0.03441,
+                "crps_dur": 0.25093,
+                "cov90_dur": 0.98466,
+                "pred_overrun_7d_pct": 23.06,
+                "triage_cost_r5": 0.73736
+              }
+            },
+            "paired_vs_adapt1_es": {
+              "Own_PriorCF": {
+                "diff": -0.17728,
+                "pct_reduction_vs_peer": 24.04,
+                "t_hac": -16.785,
+                "p_hac_holm": 0.0,
+                "p_hac_raw": 3.1682e-63
+              },
+              "Survival_PriorCF": {
+                "diff": -0.08496,
+                "pct_reduction_vs_peer": 13.17,
+                "t_hac": -9.898,
+                "p_hac_holm": 0.0,
+                "p_hac_raw": 4.2592e-23
+              },
+              "OLHR": {
+                "diff": -0.01299,
+                "pct_reduction_vs_peer": 2.27,
+                "t_hac": -2.266,
+                "p_hac_holm": 0.046851,
+                "p_hac_raw": 0.023425
+              },
+              "HGBR": {
+                "diff": -0.01258,
+                "pct_reduction_vs_peer": 2.2,
+                "t_hac": -2.735,
+                "p_hac_holm": 0.018723,
+                "p_hac_raw": 0.006241
+              },
+              "QRF": {
+                "diff": -0.00459,
+                "pct_reduction_vs_peer": 0.81,
+                "t_hac": -0.986,
+                "p_hac_holm": 0.324206,
+                "p_hac_raw": 0.32421
+              }
+            }
+          }
+        },
+        "frozen_and_onepass_comparators_es": {
+          "Frozen_QRF_Mixed": {
+            "rev_0": 0.77137,
+            "rev_1": 0.74427,
+            "rev_2": 0.67685,
+            "drift_vs_refit_qrf_pct": {
+              "rev_0": 21.27,
+              "rev_1": 17.34,
+              "rev_2": 19.85
+            }
+          },
+          "Frozen_Logit_Ridge_Mixed": {
+            "rev_0": 0.79643,
+            "rev_1": 0.7602,
+            "rev_2": 0.69774,
+            "drift_vs_refit_olhr_pct": {
+              "rev_0": 21.26,
+              "rev_1": 17.42,
+              "rev_2": 21.74
+            }
+          },
+          "Frozen_HGBR_Mixed": {
+            "rev_0": 0.79865,
+            "rev_1": 0.76629,
+            "rev_2": 0.71934,
+            "drift_vs_refit_hgbr_pct": {
+              "rev_0": 20.93,
+              "rev_1": 17.75,
+              "rev_2": 25.6
+            }
+          },
+          "Online_FTRL_Logit_RLS_Mixed": {
+            "rev_0": 0.66295,
+            "rev_1": 0.65986,
+            "rev_2": 0.58439
+          },
+          "Online_SGD_Mixed_Survival": {
+            "rev_0": 0.67627,
+            "rev_1": 0.66508,
+            "rev_2": 0.58604
+          }
+        }
+      }
+    }
+  },
+  "conditioning_regime_notes": {
+    "exp54_mozilla_bugzilla_thunderbird": {
+      "status": "offline_boundary_no_go",
+      "data_source": "Mozilla Bugzilla REST API (Thunderbird /bug + /history + /comment)",
+      "cadence": [
+        "0h",
+        "+24h",
+        "+168h"
+      ],
+      "sla_horizon_hr": 720,
+      "dev_val_counts": {
+        "rev_0": 923,
+        "rev_1": 672,
+        "rev_2": 522
+      },
+      "dev_val_es_mixed": {
+        "rev_0": {
+          "Adapt1_Kernel": 0.6424,
+          "HGBR": 0.6346,
+          "OLHR": 0.6406,
+          "QRF": 0.6418,
+          "rank": "#4/7 (NS vs peers, p_H>=0.125)"
+        },
+        "rev_1": {
+          "Adapt1_Kernel": 0.4063,
+          "QRF": 0.3795,
+          "HGBR": 0.3818,
+          "OLHR": 0.3884,
+          "rank": "#4/7 (p_H<=0.0002 vs all three)"
+        },
+        "rev_2": {
+          "Adapt1_Kernel": 0.2415,
+          "QRF": 0.2118,
+          "HGBR": 0.2139,
+          "OLHR": 0.2188,
+          "rank": "#4/7 (p_H<=6.4e-5 vs all three)"
+        }
+      },
+      "mechanism": "Single-domain similarity conditioning (bw=0.20) exhibits soft similarity bleed (~6-10 pp of weight from closed-before-cutoff bugs across the hard survival boundary; Rev 2 predicted overrun 70.5% vs actual 81.0%), whereas risk-set-filtered QRF, HGBR, and OLHR hard-partition surviving tickets."
+    },
+    "exp59_sf_fire_ems_dispatch": {
+      "status": "offline_boundary_no_go",
+      "data_source": "DataSF Fire Department Calls for Service Socrata API (data.sfgov.org/resource/nuek-vuh3.json)",
+      "cadence": [
+        "0m",
+        "+10m",
+        "+25m"
+      ],
+      "sla_horizon_min": 60,
+      "dev_val_counts": {
+        "rev_0": 1920,
+        "rev_1": 1605,
+        "rev_2": 843
+      },
+      "dev_val_es_mixed": {
+        "rev_0": {
+          "Adapt1_Kernel": 0.34761,
+          "HGBR": 0.336,
+          "OLHR": 0.33714,
+          "QRF": 0.34291,
+          "rank": "#4/6 (p_H=0.0024 vs HGBR)"
+        },
+        "rev_1": {
+          "Adapt1_Kernel": 0.32843,
+          "OLHR": 0.31791,
+          "HGBR": 0.32187,
+          "QRF": 0.32397,
+          "rank": "#4/7 (p_H=0.0277 vs OLHR)"
+        },
+        "rev_2": {
+          "Adapt1_Kernel": 0.30614,
+          "OLHR": 0.30589,
+          "HGBR": 0.30593,
+          "QRF": 0.31031,
+          "rank": "#3/7 (statistical parity, p_H=1.00)"
+        }
+      },
+      "mechanism": "High-cardinality station/call-type interactions under similarity-based conditioning suffer cross-station dilution at early dispatch stages (Rev 0/1) where boosted trees and hazard regression lead; reaches statistical parity at Rev 2 (+25m). Also required stripping post-dispatch final_priority (which changes on 24.69% of calls) to preserve append-only causality."
+    },
+    "append_only_log_requirement": "Upstream operational event logs must stay strictly append-only. Snapshot columns overwritten retroactively (e.g., final priority or final owner department) leak future resolution states and must be excluded or reconstructed solely from immutable revision timestamps."
+  },
+  "trace_column_specs": {
+    "exp16_macro_w1024_bw020_trace.csv": {
+      "rows": 930,
+      "columns": {
+        "idx": "Zero-based non-overlapping weekly step index (0..929; eval window idx >= 40, n=890)",
+        "date": "Forecast issue date (YYYY-MM-DD)",
+        "end_date": "5-trading-day maturation date (YYYY-MM-DD)",
+        "is_eval_890": "1 if in the 890-week primary evaluation window (idx >= 40), else 0",
+        "status": "predicted or abstained (7 initial insufficient-support abstentions)",
+        "ess": "Effective sample size of conditional similarity weights",
+        "ess_prior": "Effective sample size of uniform archive prior",
+        "energy_score": "5D joint Energy Score in vol-standardized return units (lower is better)",
+        "es_prior_cf": "Unconditioned archive prior 5D Energy Score counterfactual",
+        "es_4d_nonvix": "4D non-VIX cross-asset Energy Score",
+        "crps_eq..crps_usd": "Marginal 1D CRPS across equity, 10Y yield, VIX, WTI oil, and USD",
+        "y_eq, y_vix": "Realized vol-standardized 5-day equity return and VIX change",
+        "eq_q01..eq_q99, eq_es05, eq_es01, eq_pit": "Predictive equity quantiles, left-tail Expected Shortfall estimates, and continuous PIT",
+        "gfc_mass_cond, gfc_mass_prior, gfc_ratio": "Conditional weight on 2008-09 GFC archive weeks, uniform archive baseline share, and recall ratio (cond/prior)",
+        "covid20_mass_cond, covid20_mass_prior": "Conditional and prior probability mass placed on 2020 COVID weeks",
+        "prior_crisis_mass_cond, prior_crisis_mass_prior": "Conditional and prior mass placed on strictly prior crisis episodes",
+        "mean_age_yrs_cond, mean_age_yrs_prior, max_age_yrs": "Expected and maximum historical analogue age in years"
+      }
+    },
+    "exp16_macro_w0512_bw030_trace.csv": {
+      "rows": 930,
+      "columns": "Identical schema to exp16_macro_w1024_bw020_trace.csv for the best-ES sweep arm (W=512, bw=0.30)."
+    },
+    "exp16_sweep_summary.csv": {
+      "rows": 16,
+      "columns": {
+        "model_id": "Adapt-1 arm configuration or parametric/FHS comparator name",
+        "family": "Model family (Adapt-1, GARCH-FHS, GARCH-Gauss, EWMA-FHS, EWMA-Gauss)",
+        "window_w, bandwidth, max_support, conditioning": "Adapt-1 memory depth, kernel bandwidth, support cap, and conditioning mode",
+        "in_primary_9_sweep": "1 for the 9 primary sweep configs (W >= 128 and bw >= 0.20), else 0",
+        "es_5d_full19y..es_5d_tariff_2025": "Mean 5D Energy Score over n=890 weeks and regime slices",
+        "diff_vs_dcc_fhs, t10_vs_dcc_fhs, sig_beat_dcc_fhs_05": "Paired ES differential and lag-10 Newey-West HAC t-stat vs DCC-GARCH(1,1)-FHS",
+        "var99_breaches..frtb_3of3_pass": "Basel FRTB 99% VaR CC, 99% ES Acerbi-Szekely Z2, and PIT KS uniformity results",
+        "gfc_covid_peak_ratio": "13-week COVID peak 2008 GFC analogue weight ratio"
+      }
+    },
+    "nyc_311_lower_manhattan_revisions_trace.csv": {
+      "rows": 4330,
+      "columns": {
+        "event_idx": "Monotonic ticket arrival index",
+        "ticket_hash": "Deterministic anonymized ticket hash (tkt_<10-hex>; zero raw IDs or PII) linking progressive revisions of the same ticket",
+        "rev, stage_label": "Revision stage index (0, 1, 2) and elapsed checkpoint (0h, +1h, +6h)",
+        "created_date": "Ticket creation date truncated to YYYY-MM-DD",
+        "is_oos": "1 for sealed 2026 OOS evaluation tickets (2026-01-01..2026-11-12), 0 for pre-2026 warmup",
+        "n_resolved_hist": "Count of strictly resolved past tickets in archive at query time",
+        "es_mixed, es_mixed_prior_cf": "Mixed categorical+duration Energy Score and unconditioned prior counterfactual",
+        "disp_brier, disp_logloss, brier_overrun, crps_dur, cov90_dur": "Disposition probability and duration predictive scores",
+        "p_overrun_7d, y_overrun_7d": "Predicted probability and realized binary indicator of 7-day SLA overrun",
+        "y_disp_idx, y_log_dur_sc, q05_dur, q50_dur, q95_dur": "Realized disposition index, scaled log duration, and predictive duration quantiles"
+      }
+    },
+    "chicago_311_post2026_09_revisions_trace.csv": {
+      "rows": 2621,
+      "columns": {
+        "event_idx, ticket_hash, rev, stage_label, created_date, is_cold_entity": "Anonymized ticket revision metadata (cadence 0h / +6h / +48h; Wave-2 cold-start flag)",
+        "es_mixed, es_prior_cf, disp_brier, disp_logloss, brier_overrun, crps_dur, cov90_dur": "Joint mixed Energy Score and component scores",
+        "p_overrun_7d, y_overrun_7d, triage_cost_r5": "7-day SLA overrun calibration columns and asymmetric 5:1 triage cost"
+      }
+    },
+    "sf_311_post2026_09_revisions_trace.csv": {
+      "rows": 4375,
+      "columns": "Identical schema to chicago_311_post2026_09_revisions_trace.csv with San Francisco checkpoint cadence (0h / +1h / +6h)."
+    }
+  },
+  "reconciliation_assertions": [
+    {
+      "name": "exp16_w1024_bw020_eval_es",
+      "file": "exp16_macro_w1024_bw020_trace.csv",
+      "filter": "is_eval_890==1",
+      "metric": "mean(energy_score)",
+      "expected": 2.322632,
+      "tol": 0.0001
+    },
+    {
+      "name": "exp16_w0512_bw030_eval_es",
+      "file": "exp16_macro_w0512_bw030_trace.csv",
+      "filter": "is_eval_890==1",
+      "metric": "mean(energy_score)",
+      "expected": 2.320846,
+      "tol": 0.0001
+    },
+    {
+      "name": "exp16_gfc_ratio_2017",
+      "file": "exp16_macro_w1024_bw020_trace.csv",
+      "filter": "date starts with 2017",
+      "metric": "sum(gfc_mass_cond)/sum(gfc_mass_prior)",
+      "expected": 0.6671,
+      "tol": 0.001
+    },
+    {
+      "name": "exp16_gfc_ratio_late2026",
+      "file": "exp16_macro_w1024_bw020_trace.csv",
+      "filter": "date==2026-08-13",
+      "metric": "gfc_ratio",
+      "expected": 0.4749,
+      "tol": 0.001
+    },
+    {
+      "name": "exp16_gfc_ratio_volmageddon",
+      "file": "exp16_macro_w1024_bw020_trace.csv",
+      "filter": "date==2018-02-06",
+      "metric": "gfc_ratio",
+      "expected": 2.7034,
+      "tol": 0.001
+    },
+    {
+      "name": "exp16_gfc_ratio_covid_onset",
+      "file": "exp16_macro_w1024_bw020_trace.csv",
+      "filter": "date==2020-03-03",
+      "metric": "gfc_ratio",
+      "expected": 2.3354,
+      "tol": 0.001
+    },
+    {
+      "name": "exp16_gfc_ratio_covid_peak13w",
+      "file": "exp16_macro_w1024_bw020_trace.csv",
+      "filter": "598<=idx<=610",
+      "metric": "sum(gfc_mass_cond)/sum(gfc_mass_prior)",
+      "expected": 1.6185,
+      "tol": 0.001
+    },
+    {
+      "name": "exp16_gfc_ratio_apr2025_tariffs",
+      "file": "exp16_macro_w1024_bw020_trace.csv",
+      "filter": "date==2025-04-04",
+      "metric": "gfc_ratio",
+      "expected": 2.6212,
+      "tol": 0.001
+    },
+    {
+      "name": "exp16_sweep_primary9_frtb_pass",
+      "file": "exp16_sweep_summary.csv",
+      "filter": "in_primary_9_sweep==1",
+      "metric": "sum(frtb_3of3_pass)",
+      "expected": 9,
+      "tol": 0
+    },
+    {
+      "name": "exp16_sweep_primary9_sig_beats",
+      "file": "exp16_sweep_summary.csv",
+      "filter": "in_primary_9_sweep==1",
+      "metric": "sum(sig_beat_dcc_fhs_05)",
+      "expected": 5,
+      "tol": 0
+    },
+    {
+      "name": "nyc_311_total_checkpoints",
+      "file": "nyc_311_lower_manhattan_revisions_trace.csv",
+      "filter": "all",
+      "metric": "count",
+      "expected": 4330,
+      "tol": 0
+    },
+    {
+      "name": "nyc_311_identical_cohort_n",
+      "file": "nyc_311_lower_manhattan_revisions_trace.csv",
+      "filter": "is_oos==1 & has rev 0,1,2",
+      "metric": "distinct_tickets",
+      "expected": 826,
+      "tol": 0
+    },
+    {
+      "name": "nyc_311_cohort826_rev0_es",
+      "file": "nyc_311_lower_manhattan_revisions_trace.csv",
+      "filter": "cohort826 & rev==0",
+      "metric": "mean(es_mixed)",
+      "expected": 0.618733,
+      "tol": 0.0002
+    },
+    {
+      "name": "nyc_311_cohort826_rev1_es",
+      "file": "nyc_311_lower_manhattan_revisions_trace.csv",
+      "filter": "cohort826 & rev==1",
+      "metric": "mean(es_mixed)",
+      "expected": 0.553428,
+      "tol": 0.0002
+    },
+    {
+      "name": "nyc_311_cohort826_rev2_es",
+      "file": "nyc_311_lower_manhattan_revisions_trace.csv",
+      "filter": "cohort826 & rev==2",
+      "metric": "mean(es_mixed)",
+      "expected": 0.530845,
+      "tol": 0.0002
+    },
+    {
+      "name": "nyc_311_oos_rev0_overrun_pred_pct",
+      "file": "nyc_311_lower_manhattan_revisions_trace.csv",
+      "filter": "is_oos==1 & rev==0",
+      "metric": "100*mean(p_overrun_7d)",
+      "expected": 16.65,
+      "tol": 0.05
+    },
+    {
+      "name": "nyc_311_oos_rev0_overrun_act_pct",
+      "file": "nyc_311_lower_manhattan_revisions_trace.csv",
+      "filter": "is_oos==1 & rev==0",
+      "metric": "100*mean(y_overrun_7d)",
+      "expected": 17.15,
+      "tol": 0.05
+    },
+    {
+      "name": "nyc_311_oos_rev1_overrun_pred_pct",
+      "file": "nyc_311_lower_manhattan_revisions_trace.csv",
+      "filter": "is_oos==1 & rev==1",
+      "metric": "100*mean(p_overrun_7d)",
+      "expected": 30.27,
+      "tol": 0.05
+    },
+    {
+      "name": "nyc_311_oos_rev1_overrun_act_pct",
+      "file": "nyc_311_lower_manhattan_revisions_trace.csv",
+      "filter": "is_oos==1 & rev==1",
+      "metric": "100*mean(y_overrun_7d)",
+      "expected": 30.36,
+      "tol": 0.05
+    },
+    {
+      "name": "nyc_311_oos_rev2_overrun_pred_pct",
+      "file": "nyc_311_lower_manhattan_revisions_trace.csv",
+      "filter": "is_oos==1 & rev==2",
+      "metric": "100*mean(p_overrun_7d)",
+      "expected": 40.72,
+      "tol": 0.05
+    },
+    {
+      "name": "nyc_311_oos_rev2_overrun_act_pct",
+      "file": "nyc_311_lower_manhattan_revisions_trace.csv",
+      "filter": "is_oos==1 & rev==2",
+      "metric": "100*mean(y_overrun_7d)",
+      "expected": 40.44,
+      "tol": 0.05
+    },
+    {
+      "name": "chi_311_rev0_es",
+      "file": "chicago_311_post2026_09_revisions_trace.csv",
+      "filter": "rev==0 (n=1106)",
+      "metric": "mean(es_mixed)",
+      "expected": 0.471546,
+      "tol": 0.0002
+    },
+    {
+      "name": "chi_311_rev1_es",
+      "file": "chicago_311_post2026_09_revisions_trace.csv",
+      "filter": "rev==1 (n=855)",
+      "metric": "mean(es_mixed)",
+      "expected": 0.400815,
+      "tol": 0.0002
+    },
+    {
+      "name": "chi_311_rev2_es",
+      "file": "chicago_311_post2026_09_revisions_trace.csv",
+      "filter": "rev==2 (n=660)",
+      "metric": "mean(es_mixed)",
+      "expected": 0.257926,
+      "tol": 0.0002
+    },
+    {
+      "name": "sf_311_rev0_es",
+      "file": "sf_311_post2026_09_revisions_trace.csv",
+      "filter": "rev==0 (n=1722)",
+      "metric": "mean(es_mixed)",
+      "expected": 0.645932,
+      "tol": 0.0002
+    },
+    {
+      "name": "sf_311_rev1_es",
+      "file": "sf_311_post2026_09_revisions_trace.csv",
+      "filter": "rev==1 (n=1545)",
+      "metric": "mean(es_mixed)",
+      "expected": 0.629789,
+      "tol": 0.0002
+    },
+    {
+      "name": "sf_311_rev2_es",
+      "file": "sf_311_post2026_09_revisions_trace.csv",
+      "filter": "rev==2 (n=1108)",
+      "metric": "mean(es_mixed)",
+      "expected": 0.56015,
+      "tol": 0.0002
+    }
+  ]
+}

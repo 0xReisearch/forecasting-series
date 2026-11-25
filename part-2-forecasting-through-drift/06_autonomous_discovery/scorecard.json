@@ -1,0 +1,227 @@
+{
+  "schema_version": "forecasting_series_part2_sec06_discovery_scorecard_1.0",
+  "section": "06_autonomous_discovery",
+  "title": "Autonomous Discovery Across Sections 01-05",
+  "series": "Adapt-1 Research Series — Part 2: Forecasting Through Drift (Companion Discovery Audit)",
+  "provenance": {
+    "substrate": "Hosted Adapt-1 reference deployment (v0.1.0), 100% pure native API outputs with zero client-side calibration, ensembling, or overrides.",
+    "lifecycle_audit": {
+      "domains_created": 24,
+      "domains_deleted_verified_404": 24,
+      "all_delete_404_verified": true,
+      "post_flight_active_domains": 0
+    },
+    "pairing_discipline": "Every Discovery metric is paired directly against the exact same out-of-sample rows, dates, or episode seeds in Sections 01-05 (full OOS on Exp 98A n=450, Exp 89B n=323, and Exp 102C n=1,800; paired chronological slices on Exp 79B n=200, Exp 79A n=200, Exp 16 n=250w, Exp 53 n=100 tickets, Exp 103A 2026 n=2,928; paired seeds on Exp 96B n=2 and Exp 93A/C n=5)."
+  },
+  "verification_attestation": {
+    "strict_rfc8259_no_nan_inf": true,
+    "zero_local_paths_or_usernames": true,
+    "zero_secrets_or_internal_hostnames": true,
+    "zero_internal_ids_or_raw_engine_dumps": true,
+    "all_rows_from_real_persisted_runs": true
+  },
+  "three_tier_summary": {
+    "tier1_dropin_wins": [
+      "Exp 98A German Power Transition Discovery (450d): 60.84 EUR/MWh 4D ES (beats all 12/12 GJR-GARCH variants at 63.08 and Authored Kernel at 65.26 with 0 hand-picked input_paths)",
+      "Exp 98A German Power Structure Discovery (450d): 476 active @lag[1..2]/interaction features, 0.8065 AUROC (92.4% coverage) on evening peak spikes, 4 native solar-glut drift detections",
+      "Exp 89B EU 4-TSO Dunkelflaute Chronos-2 Airbag (full 323d OOS): #1/25 at 0.769808 4D ES (vs authored 0.771524; exact 150d match 0.786943 vs 0.790773), EUR 991.87M/yr 20x VoLL cost (vs EUR 1,000.79M/yr authored), 7 severe outages, and VaR95 5.88% (19/323, p_cc=0.2361 PASS) by recovering all 5 authored features plus autonomously adding GPRD",
+      "Exp 79B Crypto Cascade (200 events incl. Oct 2025 crash): 0.7340 5D ES within 0.8% of hand-authored 0.7283",
+      "Exp 102C German Power Pool Two-Stage Discovery -> /value/* (1,800 full OOS): pruning 20 -> 8 features ranks #1/15 overall with Brier 0.14933 (vs 0.18012 warm-start, 0.15431 matched Online_HGBR_Disc8, and 0.15627 full-20 Online_HGBR), LogLoss 0.46342, AUROC 0.8440, ECE 0.05297, #1/15 P_EVE Brier 0.12937, and 9/14 Holm Brier & LogLoss wins (0 Holm losses)",
+      "Exp 16 19-Yr 5-Asset Macro (250w raw return units): 2.5632 5D ES dead-heat parity (+0.11%) vs hand-authored single-feature vix_term (2.5605)",
+      "Exp 53 Chicago 311 Revisions (100 tickets): autonomously discovers all 10/10 mixed categorical+numeric covariates and preserves strict monotonic tightening (0.593 -> 0.368 -> 0.283)",
+      "Exp 93C 6-Node DAG Empirical Topology Discovery (5 paired seeds): empirical_topology_inference=true with empty effect_catalog, no objective_model, and feature_paths=[] recovers 74.2% of full authored return (+3.092 vs +4.168; 4.0/6 healthy closes, 0.0 broken closes)"
+    ],
+    "tier2_pin_structural_keys": [
+      "Exp 103A Crypto Funding (2026 OOS): autonomous_projection pruned 19 -> 8 features but dropped pooled entity-ID flags (is_btc, is_eth, own_f8), raising Brier from 0.14814 to 0.18520. Pin structural entity-IDs and let Discovery prune noisy covariates.",
+      "Exp 79A SPY/TLT Flip (200d): autonomous_projection dropped f_corr_sb (stable during pre-2022 warmup), raising 4D ES from 1.3493 to 1.4199. Pin known slow-moving regime switches while letting Discovery select high-frequency covariates."
+    ],
+    "surface_routing_notes": [
+      "Exp 96B Recurring Nonlinear Shifts (2 paired seeds): learning.context.feature_paths=[] is not wired to autonomous_projection (which operates on learning.transition), dropping A2 first-10 recall from 80.0% to 10.0%.",
+      "Exp 93A 120-World K8s POMDP (5 paired seeds): zero-ontology sequential learning (-0.688) cannot substitute for explicit finite-world belief search (+1.524 paired) when latent fault space is unfactored.",
+      "Exp 102C / 103A Symbolic Structure Discovery: discrete symbolic rules wake up cleanly (43 and 32 active features) but fire majority-class rules on imbalanced binary targets (AUROC 0.406 and 0.500), where continuous /value/* models belong."
+    ]
+  },
+  "trace_files": {
+    "exp105_discovery_benchmark_summary.csv": {
+      "rows": 15,
+      "description": "Paired Discovery vs. Hand-Authored benchmark summary across all 5 Part 2 sections."
+    }
+  },
+  "reconciliation_targets": [
+    {
+      "id": "S06_RowCount",
+      "file": "exp105_discovery_benchmark_summary.csv",
+      "agg": "count",
+      "expected": 15,
+      "tol": 0
+    },
+    {
+      "id": "S06_98A_TD_ES4D",
+      "file": "exp105_discovery_benchmark_summary.csv",
+      "benchmark_id": "exp98a_td",
+      "column": "discovery_value",
+      "expected": 60.8357,
+      "tol": 0.001
+    },
+    {
+      "id": "S06_98A_SD_Peak_AUROC",
+      "file": "exp105_discovery_benchmark_summary.csv",
+      "benchmark_id": "exp98a_sd_peak",
+      "column": "discovery_value",
+      "expected": 0.8065,
+      "tol": 0.001
+    },
+    {
+      "id": "S06_79B_TD_ES5D",
+      "file": "exp105_discovery_benchmark_summary.csv",
+      "benchmark_id": "exp79b_td",
+      "column": "discovery_value",
+      "expected": 0.73399,
+      "tol": 0.0001
+    },
+    {
+      "id": "S06_89B_TD_ES4D",
+      "file": "exp105_discovery_benchmark_summary.csv",
+      "benchmark_id": "exp89b_td",
+      "column": "discovery_value",
+      "expected": 0.769808,
+      "tol": 0.0001
+    },
+    {
+      "id": "S06_102C_DiscVal_Brier",
+      "file": "exp105_discovery_benchmark_summary.csv",
+      "benchmark_id": "exp102c_td_val",
+      "column": "discovery_value",
+      "expected": 0.14933,
+      "tol": 0.0001
+    },
+    {
+      "id": "S06_102C_DiscVal_AUROC",
+      "file": "exp105_discovery_benchmark_summary.csv",
+      "benchmark_id": "exp102c_td_val_auroc",
+      "column": "discovery_value",
+      "expected": 0.844,
+      "tol": 0.001
+    },
+    {
+      "id": "S06_16_TD_ES5D_Raw",
+      "file": "exp105_discovery_benchmark_summary.csv",
+      "benchmark_id": "exp16_td",
+      "column": "discovery_value",
+      "expected": 2.5632,
+      "tol": 0.001
+    },
+    {
+      "id": "S06_53_TD_Rev2_ES",
+      "file": "exp105_discovery_benchmark_summary.csv",
+      "benchmark_id": "exp53_td_rev0_to_rev2",
+      "column": "discovery_value",
+      "expected": 0.2831,
+      "tol": 0.001
+    },
+    {
+      "id": "S06_93C_EmpTopo_Return",
+      "file": "exp105_discovery_benchmark_summary.csv",
+      "benchmark_id": "exp93c_emp_topo",
+      "column": "discovery_value",
+      "expected": 3.0924,
+      "tol": 0.001
+    },
+    {
+      "id": "S06_89B_TD_SliceN",
+      "file": "exp105_discovery_benchmark_summary.csv",
+      "benchmark_id": "exp89b_td",
+      "column": "slice_n",
+      "expected": 323,
+      "tol": 0
+    },
+    {
+      "id": "S06_89B_TD_Authored_ES4D",
+      "file": "exp105_discovery_benchmark_summary.csv",
+      "benchmark_id": "exp89b_td",
+      "column": "authored_value",
+      "expected": 0.771524,
+      "tol": 0.0001
+    }
+  ],
+  "full_oos_trace_upgrades": {
+    "exp89b_full_323d_discovery_airbag_chronos2": {
+      "raw_trace_file": "../01_joint_tails_and_drift/exp89b_eu_dunkelflaute_oos_trace.csv",
+      "csv_columns": [
+        "es_adapt1_airbag_disc_chronos2",
+        "cost20x_adapt1_airbag_disc_chronos2",
+        "outage20x_adapt1_airbag_disc_chronos2",
+        "var95_br_adapt1_airbag_disc_chronos2"
+      ],
+      "n_oos_days": 323,
+      "n_iso_weeks": 47,
+      "n_candidate_features": 9,
+      "n_discovered_features": 6,
+      "discovered_features": [
+        "log_peve_prev",
+        "resload_da",
+        "GPRD",
+        "eurusd_stress",
+        "log_ovx",
+        "wshort_05"
+      ],
+      "rank_es_4d": "1/25",
+      "rank_cost_20x_csv9": "1/9",
+      "es_4d": 0.769808,
+      "authored_es_4d": 0.771524,
+      "delta_es_4d": -0.001716,
+      "es_4d_first150": 0.786943,
+      "authored_es_4d_first150": 0.790773,
+      "es_4d_post2026_09": 0.850472,
+      "cost_20x_m_eur_yr": 991.8725,
+      "authored_cost_20x_m_eur_yr": 1000.7915,
+      "delta_cost_20x_m_eur_yr": -8.919,
+      "outages_ge_2p5gw": 7,
+      "authored_outages_ge_2p5gw": 7,
+      "var95_breaches": 19,
+      "var95_pct": 5.88,
+      "var95_p_cc": 0.2361,
+      "var95_pass_cc_05": true,
+      "vs_authored_es_4d_p_raw": 0.221471,
+      "vs_authored_es_4d_p_holm_m24": 0.664413,
+      "vs_authored_cost_20x_p_raw": 0.295411,
+      "vs_authored_cost_20x_p_holm_m8": 0.590822
+    },
+    "exp102c_full_1800_two_stage_disc8_value": {
+      "raw_trace_file": "../02_online_probability_models/exp102c_german_power_oos_trace.csv",
+      "csv_column": "Adapt1_CUDA_MLPv2_Disc8_PowerPool2048",
+      "n_forecasts": 1800,
+      "n_days": 450,
+      "n_iso_weeks": 65,
+      "n_candidate_features": 20,
+      "n_discovered_features": 8,
+      "discovered_features": [
+        "own_block_lag1",
+        "is_p_midday",
+        "is_p_spread",
+        "is_p_night",
+        "is_p_eve",
+        "r0_p_midday_prev",
+        "r0_is_wknd_D",
+        "own_block_lag7"
+      ],
+      "rank_brier": "1/15",
+      "rank_log_loss": "1/15",
+      "rank_auroc": "1/15",
+      "rank_ece": "2/15",
+      "brier": 0.14933,
+      "log_loss": 0.46342,
+      "auroc": 0.844,
+      "ece": 0.05297,
+      "p_eve_rank_brier": "1/15",
+      "p_eve_brier": 0.12937,
+      "p_eve_log_loss": 0.40908,
+      "p_eve_ece": 0.04908,
+      "matched_hgbr_disc8_brier": 0.15431,
+      "full20_hgbr_brier": 0.15627,
+      "holm_brier_wins_m14": 9,
+      "holm_log_loss_wins_m14": 9,
+      "holm_losses_all_slices_and_pools": 0
+    }
+  }
+}
